@@ -13,4 +13,5 @@ npx @gltf-transform/cli optimize input.glb public/models/output.glb \
 
 | Artifact | Source | License | Scanner | Original | Optimized | Status |
 |---|---|---|---|---:|---:|---|
-| Corinthian Capital | https://skfb.ly/pIxPR | Verify | Verify | — | — | Pending |
+| Batch supplied locally | Tanit XR / Sketchfab | Per-record verification underway | Tanit XR volunteers | 56.6 MB | 7.1 MB | 16 unique scans integrated |
+| Corinthian Capital | https://skfb.ly/pIxPR | CC BY-NC-SA (version to verify) | Scaniverse capture; Daniel Gómez game-ready optimization | 2.65 MB | 0.44 MB | Integrated |
