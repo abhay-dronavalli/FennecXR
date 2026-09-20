@@ -4,7 +4,6 @@ import {
   Billboard,
   OrbitControls,
   PointerLockControls,
-  Sky,
   Text,
   useGLTF,
 } from "@react-three/drei";
@@ -50,13 +49,20 @@ const GROUND = "#b89364";
 const STONE = "#e6ded0";
 const STONE_DARK = "#cbbda6";
 const ACCENT = "#7a8f7d";
+const HAZE = "#e7d6b4";
 
-const matStone = new THREE.MeshLambertMaterial({ color: STONE });
-const matStoneDark = new THREE.MeshLambertMaterial({ color: STONE_DARK });
-const matAccent = new THREE.MeshLambertMaterial({ color: ACCENT });
-const matPlinth = new THREE.MeshLambertMaterial({ color: "#d8cdb8" });
-const matGhost = new THREE.MeshLambertMaterial({
+const stone = (color: string, roughness = 0.92) =>
+  new THREE.MeshStandardMaterial({ color, roughness, metalness: 0 });
+
+const matStone = stone(STONE);
+const matStoneDark = stone(STONE_DARK, 0.96);
+const matAccent = stone(ACCENT, 0.85);
+const matPlinth = stone("#d8cdb8", 0.95);
+const matFrame = stone("#b9a884", 0.95);
+const matGhost = new THREE.MeshStandardMaterial({
   color: "#ffffff",
+  roughness: 1,
+  metalness: 0,
   transparent: true,
   opacity: 0.22,
 });
@@ -65,6 +71,140 @@ const geoColumn = new THREE.CylinderGeometry(0.45, 0.55, 7, 10);
 const geoBox = new THREE.BoxGeometry(1, 1, 1);
 const geoPlinth = new THREE.CylinderGeometry(0.85, 0.95, 1, 12);
 const geoPlane = new THREE.PlaneGeometry(1, 1);
+
+/* ------------------------------------------------------------ atmosphere */
+
+function gradientTexture(stops: [number, string][], size = 256) {
+  const c = document.createElement("canvas");
+  c.width = 4;
+  c.height = size;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createLinearGradient(0, 0, 0, size);
+  for (const [at, color] of stops) g.addColorStop(at, color);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 4, size);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/**
+ * A warm afternoon gradient rather than drei's physical Sky: the horizon band
+ * is pinned to exactly HAZE, which is also the fog colour, so the ground fades
+ * into the sky instead of hard-cutting against it.
+ */
+function GradientSky() {
+  const tex = useMemo(
+    () =>
+      gradientTexture([
+        [0, "#6f93b8"],
+        [0.36, "#a9bfcf"],
+        [0.47, "#d6cdb6"],
+        [0.5, HAZE],
+        [0.56, "#dfc79d"],
+        [1, "#b08f61"],
+      ]),
+    []
+  );
+  return (
+    <mesh scale={[-1, 1, 1]} renderOrder={-1}>
+      <sphereGeometry args={[800, 24, 16]} />
+      <meshBasicMaterial map={tex} fog={false} depthWrite={false} side={THREE.BackSide} />
+    </mesh>
+  );
+}
+
+/**
+ * Tiled sandstone noise for the ground. A single flat hex under a directional
+ * light reads worse than no light at all: there is nothing for the shading to
+ * catch on.
+ */
+function groundTexture(base: string, size = 256) {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, size, size);
+
+  const rnd = mulberry32(0x5eed);
+  for (let i = 0; i < 2600; i++) {
+    const r = 1 + rnd() * 7;
+    const a = 0.02 + rnd() * 0.05;
+    ctx.fillStyle =
+      rnd() > 0.5 ? `rgba(255,244,214,${a})` : `rgba(96,72,44,${a})`;
+    ctx.beginPath();
+    ctx.arc(rnd() * size, rnd() * size, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+
+/** Small deterministic PRNG, so scenery is identical on every load. */
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ------------------------------------------------------------------- sun */
+
+/**
+ * One directional light, angled like an afternoon sun rather than noon.
+ * Its shadow camera is a tight box that FOLLOWS THE PLAYER instead of
+ * spanning the whole 600-unit map: at map-wide scale a 2048 map would give
+ * about three texels per metre, which is worse than no shadow at all.
+ */
+const SUN_OFFSET: [number, number, number] = [115, 87, 96];
+const SHADOW_SPAN = 90;
+const SHADOW_MAP = 2048;
+
+function SunLight() {
+  const ref = useRef<THREE.DirectionalLight>(null);
+  const target = useMemo(() => new THREE.Object3D(), []);
+
+  useFrame(() => {
+    const l = ref.current;
+    if (!l) return;
+    // Snap the frustum to whole shadow texels, or the shadow edges crawl
+    // as the player walks.
+    const texel = (SHADOW_SPAN * 2) / SHADOW_MAP;
+    const cx = Math.round(live.x / texel) * texel;
+    const cz = Math.round(live.z / texel) * texel;
+    target.position.set(cx, 0, cz);
+    target.updateMatrixWorld();
+    l.position.set(cx + SUN_OFFSET[0], SUN_OFFSET[1], cz + SUN_OFFSET[2]);
+  });
+
+  return (
+    <>
+      <primitive object={target} />
+      <directionalLight
+        ref={ref}
+        target={target}
+        intensity={2.9}
+        color="#fff0d6"
+        castShadow
+        shadow-mapSize-width={SHADOW_MAP}
+        shadow-mapSize-height={SHADOW_MAP}
+        shadow-bias={-0.0006}
+        shadow-normalBias={0.05}
+        shadow-camera-near={1}
+        shadow-camera-far={400}
+        shadow-camera-left={-SHADOW_SPAN}
+        shadow-camera-right={SHADOW_SPAN}
+        shadow-camera-top={SHADOW_SPAN}
+        shadow-camera-bottom={-SHADOW_SPAN}
+      />
+    </>
+  );
+}
 
 /* ----------------------------------------------------------------- state */
 
@@ -226,6 +366,35 @@ function Player({
   return null;
 }
 
+/* ---------------------------------------------------------------- ground */
+
+function Ground() {
+  const outer = useMemo(() => {
+    const t = groundTexture(GROUND);
+    t.repeat.set(120, 120);
+    return t;
+  }, []);
+  const inner = useMemo(() => {
+    const t = groundTexture(SAND);
+    t.repeat.set(90, 90);
+    return t;
+  }, []);
+
+  return (
+    <>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[WORLD_HALF * 2 + 40, WORLD_HALF * 2 + 40]} />
+        <meshStandardMaterial map={outer} roughness={1} metalness={0} />
+      </mesh>
+      {/* a lighter inner plate so the playable area reads as bounded */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
+        <circleGeometry args={[WORLD_HALF - 10, 64]} />
+        <meshStandardMaterial map={inner} roughness={1} metalness={0} />
+      </mesh>
+    </>
+  );
+}
+
 /* ------------------------------------------------------------------ zone */
 
 function ZoneBuild({ zone }: { zone: Zone }) {
@@ -255,12 +424,20 @@ function ZoneBuild({ zone }: { zone: Zone }) {
       {zone.style === "roman" &&
         cols.map(([x, z], i) => (
           <group key={i}>
-            <mesh position={[x, 3.8, z]} geometry={geoColumn} material={matStone} />
+            <mesh
+              position={[x, 3.8, z]}
+              geometry={geoColumn}
+              material={matStone}
+              castShadow
+              receiveShadow
+            />
             <mesh
               position={[x, 0.45, z]}
               geometry={geoBox}
               material={matStoneDark}
               scale={[1.6, 0.6, 1.6]}
+              castShadow
+              receiveShadow
             />
           </group>
         ))}
@@ -275,18 +452,24 @@ function ZoneBuild({ zone }: { zone: Zone }) {
                 geometry={geoBox}
                 material={matStone}
                 scale={[6, 6, 0.8]}
+                castShadow
+                receiveShadow
               />
               <mesh
                 position={[0, 2.4, 0.1]}
                 geometry={geoBox}
                 material={matAccent}
                 scale={[2.6, 4.4, 0.9]}
+                castShadow
+                receiveShadow
               />
               <mesh
                 position={[0, 6.4, 0]}
                 geometry={geoBox}
                 material={matStoneDark}
                 scale={[6.6, 0.8, 1.2]}
+                castShadow
+                receiveShadow
               />
             </group>
           );
@@ -346,11 +529,18 @@ function Signpost() {
   );
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <circleGeometry args={[9, 32]} />
-        <meshLambertMaterial color={STONE_DARK} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} receiveShadow>
+        <circleGeometry args={[9, 48]} />
+        <meshStandardMaterial color={STONE_DARK} roughness={0.96} metalness={0} />
       </mesh>
-      <mesh position={[0, 3, 0]} geometry={geoBox} material={matStone} scale={[0.5, 6, 0.5]} />
+      <mesh
+        position={[0, 3, 0]}
+        geometry={geoBox}
+        material={matStone}
+        scale={[0.5, 6, 0.5]}
+        castShadow
+        receiveShadow
+      />
 
       {arms.map((z, i) => {
         const bearing = Math.atan2(z.center[0], z.center[1]);
@@ -358,7 +548,14 @@ function Signpost() {
         const y = 5.3 - i * 0.82;
         return (
           <group key={z.id} rotation={[0, bearing, 0]} position={[0, y, 0]}>
-            <mesh position={[0, 0, 2.3]} geometry={geoBox} scale={[0.14, 0.62, 4.4]} material={matStone} />
+            <mesh
+              position={[0, 0, 2.3]}
+              geometry={geoBox}
+              scale={[0.14, 0.62, 4.4]}
+              material={matStone}
+              castShadow
+              receiveShadow
+            />
             {/* One copy per face, each front-facing only, so the mirrored
                 copy never bleeds through from the other side. */}
             {[
@@ -424,6 +621,12 @@ function LocalModel({ uid, reduceMotion }: { uid: string; reduceMotion: boolean 
     const ov = OVERRIDES[uid];
     if (ov?.rotation) clone.rotation.set(...ov.rotation);
     fitToBox(clone, ov?.height ?? 2);
+    clone.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
+    });
     return clone;
   }, [scene, uid]);
 
@@ -480,7 +683,13 @@ function ThumbCard({ url }: { url: string }) {
   return (
     <group position={[0, 2.5, 0]}>
       {/* frame */}
-      <mesh geometry={geoBox} material={matPlinth} scale={[w + 0.16, h + 0.16, 0.08]} />
+      <mesh
+        geometry={geoBox}
+        material={matFrame}
+        scale={[w + 0.16, h + 0.16, 0.08]}
+        castShadow
+        receiveShadow
+      />
       {state && (
         <mesh position={[0, 0, 0.05]} geometry={geoPlane} scale={[w, h, 1]}>
           <meshBasicMaterial map={state.tex} toneMapped={false} />
@@ -490,8 +699,9 @@ function ThumbCard({ url }: { url: string }) {
       <mesh
         position={[0, -h / 2 - 0.5, 0]}
         geometry={geoBox}
-        material={matPlinth}
+        material={matFrame}
         scale={[0.1, 1.05, 0.1]}
+        castShadow
       />
     </group>
   );
@@ -510,7 +720,13 @@ function Artifact({
 }) {
   return (
     <group position={model.pos} rotation={[0, model.facing, 0]}>
-      <mesh position={[0, 0.5, 0]} geometry={geoPlinth} material={matPlinth} />
+      <mesh
+        position={[0, 0.5, 0]}
+        geometry={geoPlinth}
+        material={matPlinth}
+        castShadow
+        receiveShadow
+      />
       {near && (
         <mesh position={[0, 0.06, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[1.5, 1.9, 24]} />
@@ -658,27 +874,20 @@ export function WorldCanvas({
   return (
     <Canvas
       dpr={[1, 1.5]}
+      shadows="soft"
       camera={{ fov: 70, near: 0.1, far: 900, position: SPAWN }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ scene }) => {
-        scene.fog = new THREE.Fog("#e7d9bd", 160, 560);
-        scene.background = new THREE.Color("#e7d9bd");
+        scene.fog = new THREE.Fog(HAZE, 90, 430);
+        scene.background = new THREE.Color(HAZE);
       }}
     >
-      <Sky sunPosition={[80, 40, -60]} turbidity={5} rayleigh={1.2} />
-      <hemisphereLight args={["#fff4e0", "#8a7350", 0.9]} />
-      <directionalLight position={[60, 90, 40]} intensity={1.1} color="#fff1dc" />
+      <GradientSky />
+      {/* Low fill so the shadow sides read as stone, not as holes. */}
+      <hemisphereLight args={["#e8ddc4", "#6b5637", 0.42]} />
+      <SunLight />
 
-      {/* ground */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[WORLD_HALF * 2 + 40, WORLD_HALF * 2 + 40]} />
-        <meshLambertMaterial color={GROUND} />
-      </mesh>
-      {/* a lighter inner plate so the playable area reads as bounded */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-        <circleGeometry args={[WORLD_HALF - 10, 48]} />
-        <meshLambertMaterial color={SAND} />
-      </mesh>
+      <Ground />
 
       <Signpost />
 
