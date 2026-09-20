@@ -157,6 +157,16 @@ function Lantern({ position, intensity }) {
   )
 }
 
+function ExteriorLantern({ position, intensity }) {
+  return (
+    <group position={position}>
+      <Stone position={[0, 1.05, 0]} scale={[0.16, 2.1, 0.16]} color={palette.stoneDark} />
+      <Stone position={[0, 2.12, 0]} scale={[0.38, 0.12, 0.38]} color={palette.stoneDark} />
+      <Lantern position={[0, 2.38, 0]} intensity={intensity * 1.25} />
+    </group>
+  )
+}
+
 function PrayerHallRoof({ lanternIntensity }) {
   const roofCourses = [-29.75, -29.2, -27.7, -27.15]
   return (
@@ -254,7 +264,7 @@ function CarthageTemplePrecinct({ lanternIntensity }) {
       <Stone position={[0, 2.15, -8.65]} scale={[15.8, 4.1, 0.55]} color={palette.stone} />
       <Stone position={[-7.65, 2.15, -4.5]} scale={[0.5, 4.1, 8.4]} color={palette.stone} />
       <Stone position={[7.65, 2.15, -4.5]} scale={[0.5, 4.1, 8.4]} color={palette.stone} />
-      <Stone position={[0, 4.35, -4.4]} scale={[16.3, 0.32, 9]} color={palette.stoneDark} />
+      <Stone position={[0, 4.35, -3.85]} scale={[16.3, 0.32, 10.1]} color={palette.stoneDark} />
 
       {backBays.map((x) => (
         <group key={x}>
@@ -275,6 +285,9 @@ function CarthageTemplePrecinct({ lanternIntensity }) {
 
       {[-4.8, 0, 4.8].map((x) => (
         <Lantern key={`temple-lantern-${x}`} position={[x, 3.65, -5.1]} intensity={lanternIntensity} />
+      ))}
+      {[-6.5, 6.5].map((x) => (
+        <ExteriorLantern key={`temple-exterior-${x}`} position={[x, 0.45, 4.8]} intensity={lanternIntensity} />
       ))}
 
       <mesh castShadow position={[-6, 2.02, 1]}>
@@ -349,6 +362,9 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
       <Stone position={[0, 3.03, -27.8]} scale={[20.5, 0.22, 1.7]} color={palette.tileWhite} />
       {[-6, 0, 6].map((x) => (
         <Lantern key={`portico-${x}`} position={[x, 2.55, -27.15]} intensity={lanternIntensity} />
+      ))}
+      {[-5.4, 5.4].map((x) => (
+        <ExteriorLantern key={`mosque-exterior-${x}`} position={[x, 0.08, -18.9]} intensity={lanternIntensity} />
       ))}
 
       <mesh receiveShadow position={[5, 0.13, -24.5]} rotation={[-Math.PI / 2, 0, 0]}>
