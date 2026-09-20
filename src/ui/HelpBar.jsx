@@ -9,6 +9,7 @@ export default function HelpBar() {
       <span><kbd>WASD</kbd> move</span>
       <span><kbd>E</kbd> inspect</span>
       <span><kbd>G</kbd> layers</span>
+      <span><kbd>,</kbd><kbd>.</kbd> track  <kbd>M</kbd> mute</span>
       <span><kbd>Esc</kbd> release mouse</span>
     </div>
   )
