@@ -379,6 +379,221 @@ a { color: inherit; }
   .time-control button { padding-inline: 0.42rem; }
 }
 
+/* ── Pamphlet trigger (pulsing arrow) ──────────────────────────────────── */
+
+.pamphlet-trigger {
+  position: fixed;
+  z-index: 6;
+  bottom: 3.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  border: none;
+  padding: 0.2rem 0.6rem;
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+.pamphlet-trigger--hidden { opacity: 0; pointer-events: none; }
+.pamphlet-trigger__arrow {
+  display: block;
+  font-size: 1.4rem;
+  line-height: 1;
+  animation: guide-pulse 1.6s ease-in-out infinite;
+}
+.pamphlet-trigger__label {
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+@keyframes guide-pulse {
+  0%, 100% { transform: translateY(0);    opacity: 0.45; }
+  50%      { transform: translateY(-7px); opacity: 1;    }
+}
+
+/* ── Pamphlet book panel ───────────────────────────────────────────────── */
+
+.pamphlet {
+  position: fixed;
+  z-index: 25;
+  bottom: 0;
+  left: 50%;
+  width: min(58rem, calc(100% - 1rem));
+  height: 80vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  transform: translateX(-50%) translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid rgb(232 217 190 / 12%);
+  border-bottom: none;
+  box-shadow: 0 -14px 60px rgb(36 29 22 / 60%);
+  overflow: hidden;
+}
+.pamphlet--open { transform: translateX(-50%) translateY(0); }
+
+/* Top bar */
+.pamphlet__tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 1.2rem;
+  background: rgb(247 238 223 / 5%);
+  border-bottom: 1px solid rgb(232 217 190 / 15%);
+  flex-shrink: 0;
+}
+.pamphlet__close {
+  border: none;
+  padding: 0.15rem 0.5rem;
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  transition: color 0.12s;
+}
+.pamphlet__close:hover { color: var(--paper); }
+.pamphlet__tab-title { font-family: Georgia, serif; font-size: 0.85rem; }
+.pamphlet__tab-count { color: var(--stone); font-size: 0.68rem; }
+
+/* Body — preview + grid side by side */
+.pamphlet__body {
+  display: grid;
+  grid-template-columns: 18rem 1fr;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 3D preview panel (left) */
+.pamphlet__preview {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  border-right: 1px solid rgb(232 217 190 / 12%);
+  background: rgb(36 29 22 / 50%);
+}
+.pamphlet__preview-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  min-height: 12rem;
+}
+.pamphlet__preview-info {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgb(232 217 190 / 12%);
+}
+.pamphlet__preview-info h3 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+.pamphlet__preview-info p {
+  margin: 0.2rem 0 0;
+  color: var(--stone);
+  font-size: 0.7rem;
+}
+.pamphlet__go {
+  display: inline-block;
+  margin-top: 0.6rem;
+  border: 1px solid var(--sky-warm);
+  padding: 0.4rem 0.8rem;
+  background: transparent;
+  color: var(--sky-warm);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: background 0.12s, color 0.12s;
+}
+.pamphlet__go:hover { background: var(--sky-warm); color: var(--ink); }
+
+/* Grid panel (right, scrollable) */
+.pamphlet__grid-wrap {
+  overflow-y: auto;
+  padding: 0.8rem;
+}
+.pamphlet__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.5rem;
+}
+
+/* ── Magazine card ─────────────────────────────────────────────────────── */
+
+.mag-card {
+  display: grid;
+  grid-template-rows: 5.5rem auto;
+  width: 100%;
+  border: 1px solid rgb(232 217 190 / 10%);
+  padding: 0;
+  background: rgb(247 238 223 / 3%);
+  color: var(--paper);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition: border-color 0.14s;
+}
+.mag-card:hover, .mag-card--active { border-color: var(--sky-warm); }
+.mag-card--active { background: rgb(127 179 209 / 8%); }
+
+/* Visual thumb */
+.mag-card__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.mag-card__icon { font-size: 1.8rem; opacity: 0.5; }
+.mag-card__3d {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  padding: 0.08rem 0.3rem;
+  background: var(--sky-warm);
+  color: var(--ink);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+/* Info */
+.mag-card__info { padding: 0.45rem 0.55rem 0.4rem; }
+.mag-card__title {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.mag-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.4rem;
+  margin: 0.2rem 0 0;
+  color: var(--stone);
+  font-size: 0.55rem;
+}
+
+@media (max-width: 720px) {
+  .pamphlet { height: 88vh; width: 100%; }
+  .pamphlet__body { grid-template-columns: 1fr; grid-template-rows: 14rem 1fr; }
+  .pamphlet__preview { border-right: none; border-bottom: 1px solid rgb(232 217 190 / 12%); }
+  .pamphlet__grid { grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); }
+  .mag-card { grid-template-rows: 4rem auto; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }

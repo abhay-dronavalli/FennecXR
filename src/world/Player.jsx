@@ -11,11 +11,19 @@ const movement = new THREE.Vector3()
 export default function Player() {
   const { camera } = useThree()
   const [, getControls] = useKeyboardControls()
-  const hasEntered = useExperienceStore((state) => state.hasEntered)
+  const hasEntered        = useExperienceStore((state) => state.hasEntered)
+  const pamphletOpen      = useExperienceStore((state) => state.pamphletOpen)
+  const teleportTarget    = useExperienceStore((state) => state.teleportTarget)
+  const setTeleportTarget = useExperienceStore((state) => state.setTeleportTarget)
   const previous = useRef(camera.position.clone())
 
   useFrame((_, rawDelta) => {
-    if (!hasEntered || document.pointerLockElement == null) return
+    if (teleportTarget) {
+      camera.position.set(teleportTarget[0], 1.7, teleportTarget[2] + 3)
+      setTeleportTarget(null)
+      return
+    }
+    if (!hasEntered || pamphletOpen || document.pointerLockElement == null) return
     const delta = Math.min(rawDelta, 0.05)
     const { forward, backward, left, right, sprint } = getControls()
     if (!forward && !backward && !left && !right) return

@@ -19,4 +19,8 @@ export const useExperienceStore = create((set) => ({
   }),
   enter: () => set({ hasEntered: true }),
   toggleReducedMotion: () => set((state) => ({ reducedMotion: !state.reducedMotion })),
+  pamphletOpen: false,
+  setPamphletOpen: (v) => set({ pamphletOpen: v }),
+  teleportTarget: null,
+  setTeleportTarget: (pos) => set({ teleportTarget: pos }),
 }))
