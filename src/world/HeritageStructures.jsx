@@ -1,20 +1,59 @@
 import { Html } from '@react-three/drei'
+import * as THREE from 'three'
 import { palette } from '../palette.js'
 import { useExperienceStore } from '../store.js'
 
-function Stone({ position, scale, rotation = [0, 0, 0], color = palette.stone, opacity = 1 }) {
+function createPlasterTexture() {
+  const size = 64
+  const data = new Uint8Array(size * size * 4)
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const index = (y * size + x) * 4
+      const grain = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453
+      const noise = grain - Math.floor(grain)
+      const broadVariation = Math.sin(x * 0.22) * 3 + Math.cos(y * 0.19) * 3
+      const value = Math.max(214, Math.min(244, 230 + (noise - 0.5) * 14 + broadVariation))
+      data[index] = value
+      data[index + 1] = value
+      data[index + 2] = value
+      data[index + 3] = 255
+    }
+  }
+
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(3, 2)
+  texture.minFilter = THREE.LinearMipmapLinearFilter
+  texture.magFilter = THREE.LinearFilter
+  texture.needsUpdate = true
+  return texture
+}
+
+const plasterTexture = createPlasterTexture()
+
+function Stone({ position, scale, rotation = [0, 0, 0], color = palette.stone, opacity = 1, textured = false }) {
   return (
     <mesh castShadow receiveShadow position={position} scale={scale} rotation={rotation}>
       <boxGeometry />
       <meshStandardMaterial
         color={color}
         flatShading
+        map={textured ? plasterTexture : null}
+        bumpMap={textured ? plasterTexture : null}
+        bumpScale={textured ? 0.018 : 0}
         roughness={0.96}
         transparent={opacity < 1}
         opacity={opacity}
       />
     </mesh>
   )
+}
+
+function PlasterWall(props) {
+  return <Stone {...props} textured />
 }
 
 function Column({ position, height = 2.2, radius = 0.16, color = palette.stone }) {
@@ -246,7 +285,7 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
       <Stone position={[0, 0.07, -25]} scale={[22, 0.05, 8.2]} color={palette.sand} />
       <FloorInlay position={[0, 0.11, -24.55]} width={20.5} depth={7.4} />
 
-      <Stone position={[0, 1.55, -29.25]} scale={[24, 3.1, 0.46]} />
+      <PlasterWall position={[0, 1.55, -29.25]} scale={[24, 3.1, 0.46]} />
       <Stone position={[0, 1.48, -28.99]} scale={[3.05, 2.96, 0.08]} color={palette.tileWhite} />
       <Stone position={[0, 4.05, -29.25]} scale={[24, 0.34, 0.75]} color={palette.stoneDark} />
       <Stone position={[0, 3.75, -30.1]} scale={[24, 0.24, 2.2]} color={palette.stoneDark} />
@@ -255,23 +294,23 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
       <PrayerHallRoof lanternIntensity={lanternIntensity} />
       <Minaret position={[9.4, 0, -29.1]} />
 
-      <Stone position={[-11.25, 1.5, -21.7]} scale={[0.46, 3, 5]} />
-      <Stone position={[-11.25, 1.5, -27.3]} scale={[0.46, 3, 3.8]} />
-      <Stone position={[11.25, 1.5, -21.7]} scale={[0.46, 3, 5]} />
-      <Stone position={[11.25, 1.5, -27.3]} scale={[0.46, 3, 3.8]} />
+      <PlasterWall position={[-11.25, 1.5, -21.55]} scale={[0.46, 3, 2.8]} />
+      <PlasterWall position={[-11.25, 1.5, -27.6]} scale={[0.46, 3, 3.2]} />
+      <PlasterWall position={[11.25, 1.5, -21.55]} scale={[0.46, 3, 2.8]} />
+      <PlasterWall position={[11.25, 1.5, -27.6]} scale={[0.46, 3, 3.2]} />
 
       <Arch position={[-11.25, 0, -24.5]} rotation={[0, Math.PI / 2, 0]} width={2.6} height={3.1} />
       <Arch position={[11.25, 0, -24.5]} rotation={[0, -Math.PI / 2, 0]} width={2.6} height={3.1} />
       <Arch position={[0, 0, -20.1]} width={3.2} height={3.4} />
-      <Stone position={[-7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
-      <Stone position={[7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
-      <Stone position={[-1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
-      <Stone position={[1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
-      <Stone position={[-0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
-      <Stone position={[0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
+      <PlasterWall position={[-7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
+      <PlasterWall position={[7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
+      <PlasterWall position={[-1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
+      <PlasterWall position={[1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
+      <PlasterWall position={[-0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
+      <PlasterWall position={[0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
       <Stone position={[0, 3.55, -20.15]} scale={[25, 0.38, 0.72]} color={palette.stone} />
 
-      <Stone position={[-6.7, 1.25, -19.9]} scale={[3.2, 2.75, 0.18]} color={palette.stone} />
+      <PlasterWall position={[-6.7, 1.25, -19.9]} scale={[3.2, 2.75, 0.18]} color={palette.stone} />
       <Arch position={[-6.7, 0.05, -19.68]} width={2.75} height={2.95} depth={0.2} />
       <DecorativeBand position={[0, 2.72, -19.45]} width={24.4} count={54} />
       <Stone position={[5.8, 0.48, -19.89]} scale={[9.8, 0.12, 0.09]} color={palette.stone} />
