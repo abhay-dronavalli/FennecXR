@@ -4,6 +4,7 @@ import Scene from './world/Scene.jsx'
 import Onboarding from './ui/Onboarding.jsx'
 import InfoPanel from './ui/InfoPanel.jsx'
 import HelpBar from './ui/HelpBar.jsx'
+import LoadingStatus from './ui/LoadingStatus.jsx'
 import { useExperienceStore } from './store.js'
 
 const controls = [
@@ -79,6 +80,7 @@ function Experience({ content }) {
           <Scene content={content} />
         </KeyboardControls>
       </SceneBoundary>
+      <LoadingStatus />
       {hasEntered && <div className="crosshair" aria-hidden="true" />}
       {hasEntered && nearestArtifact && !activeArtifact && (
         <button className="proximity-prompt" onClick={() => setActiveArtifact(nearestArtifact)}>

@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei'
-import { Component, Suspense, useMemo } from 'react'
+import { Component, Suspense, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { palette } from '../palette.js'
 import { useExperienceStore } from '../store.js'
@@ -30,29 +30,35 @@ function Placeholder({ artifact, onOpen }) {
   )
 }
 
-function ScannedModel({ url, onOpen }) {
+function ScannedModel({ url, fit = 1.8, onOpen }) {
   const { scene } = useGLTF(url)
   const clonedScene = useMemo(() => scene.clone(true), [scene])
+  const normalization = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(clonedScene)
+    const size = box.getSize(new THREE.Vector3())
+    const center = box.getCenter(new THREE.Vector3())
+    const longestSide = Math.max(size.x, size.y, size.z) || 1
+    return { center, scale: fit / longestSide }
+  }, [clonedScene, fit])
 
-  useMemo(() => {
+  useEffect(() => {
     clonedScene.traverse((object) => {
       if (!object.isMesh) return
       object.castShadow = true
       object.receiveShadow = true
-      if (object.material) {
-        object.material.side = THREE.FrontSide
-        object.material.needsUpdate = true
-      }
     })
   }, [clonedScene])
 
   return (
-    <primitive
-      object={clonedScene}
-      onClick={onOpen}
-      onPointerEnter={() => { document.body.style.cursor = 'pointer' }}
-      onPointerLeave={() => { document.body.style.cursor = '' }}
-    />
+    <group scale={normalization.scale}>
+      <primitive
+        object={clonedScene}
+        position={normalization.center.clone().multiplyScalar(-1)}
+        onClick={onOpen}
+        onPointerEnter={() => { document.body.style.cursor = 'pointer' }}
+        onPointerLeave={() => { document.body.style.cursor = '' }}
+      />
+    </group>
   )
 }
 
@@ -93,7 +99,7 @@ export default function Artifact({ artifact }) {
       {artifact.model ? (
         <ModelBoundary fallback={placeholder}>
           <Suspense fallback={placeholder}>
-            <ScannedModel url={artifact.model} onOpen={handleOpen} />
+            <ScannedModel url={artifact.model} fit={artifact.modelFit} onOpen={handleOpen} />
           </Suspense>
         </ModelBoundary>
       ) : placeholder}

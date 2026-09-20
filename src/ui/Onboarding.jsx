@@ -15,8 +15,8 @@ export default function Onboarding() {
         <p className="kicker">A walk through the Tanit XR archive</p>
         <h1 id="welcome-title">Put the fragments<br />back on the ground.</h1>
         <p>
-          Twenty-one scans. Four places on this map. Everything textured is documentation;
-          everything faceted is an honest abstraction.
+          Twenty-one Carthage records, plus a Tunisia-wide details court. Everything
+          textured is documentation; everything faceted is an honest abstraction.
         </p>
         <div className="onboarding__actions">
           <button id="enter-world" className="button" onClick={enter}>Enter the landscape</button>

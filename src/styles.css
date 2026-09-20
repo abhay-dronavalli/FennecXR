@@ -119,6 +119,21 @@ a { color: inherit; }
 }
 .help-bar kbd { color: var(--sky-warm); font-weight: 700; }
 
+.loading-status {
+  position: fixed;
+  z-index: 7;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: grid;
+  min-width: 12rem;
+  gap: 0.4rem;
+  padding: 0.65rem 0.8rem;
+  background: rgb(36 29 22 / 88%);
+  color: var(--paper);
+  font-size: 0.72rem;
+}
+.loading-status progress { width: 100%; accent-color: var(--sky-warm); }
+
 .interpretation-banner {
   position: fixed;
   z-index: 6;

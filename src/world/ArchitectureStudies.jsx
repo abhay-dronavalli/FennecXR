@@ -23,7 +23,7 @@ function Column({ position, height = 1.5, radius = 0.12 }) {
 
 function StudyLabel({ study, position }) {
   return (
-    <Html center position={position} distanceFactor={10} className="study-label-wrap">
+    <Html center position={position} distanceFactor={4.5} className="study-label-wrap">
       <div className="study-label">
         <strong>{study.title}</strong>
         <span>{study.place}</span>
@@ -112,10 +112,16 @@ export default function ArchitectureStudies({ studies = [] }) {
   if (studies.length < 3) return null
   return (
     <group>
-      <Html center position={[0, 2.1, -11.6]} distanceFactor={12} className="study-label-wrap">
+      <Html center position={[0, 2.1, -11.6]} distanceFactor={5} className="study-label-wrap">
         <div className="study-heading">
           <strong>Tunisian architecture studies</strong>
           <span>Sourced silhouettes · intentionally not measured reconstructions</span>
+        </div>
+      </Html>
+      <Html center position={[0, 2.3, -21.3]} distanceFactor={5} className="study-label-wrap">
+        <div className="study-heading">
+          <strong>Tunisia details court</strong>
+          <span>Real scans from their named sites · not presented as Carthage finds</span>
         </div>
       </Html>
       <KairouanStudy study={studies[0]} />

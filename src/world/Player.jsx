@@ -32,7 +32,7 @@ export default function Player() {
     previous.current.copy(camera.position)
     camera.position.addScaledVector(movement, delta * (sprint ? 7.5 : 4.6))
     camera.position.x = THREE.MathUtils.clamp(camera.position.x, -43, 43)
-    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -20, 45)
+    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -30, 45)
     camera.position.y = 1.7
   })
 
