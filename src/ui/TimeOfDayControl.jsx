@@ -13,7 +13,7 @@ export default function TimeOfDayControl() {
 
   return (
     <fieldset className="time-control">
-      <legend>Time of day</legend>
+      <legend>Time of day · T to cycle</legend>
       <div className="time-control__options">
         {options.map((option) => (
           <button

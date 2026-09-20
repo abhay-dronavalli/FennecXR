@@ -151,10 +151,19 @@ export default function Scene({ content }) {
   return (
     <Canvas
       aria-hidden="true"
+      frameloop="always"
       shadows={{ type: THREE.PCFSoftShadowMap }}
       camera={{ position: content.zones[0].spawn, fov: 60, near: 0.1, far: 260 }}
-      dpr={[0.75, 1.5]}
-      gl={{ antialias: true, powerPreference: 'high-performance' }}
+      dpr={[1, 2]}
+      gl={{
+        alpha: false,
+        antialias: true,
+        depth: true,
+        failIfMajorPerformanceCaveat: true,
+        powerPreference: 'high-performance',
+        preserveDrawingBuffer: false,
+        stencil: false,
+      }}
       onCreated={({ gl }) => {
         gl.outputColorSpace = THREE.SRGBColorSpace
         gl.toneMapping = THREE.ACESFilmicToneMapping

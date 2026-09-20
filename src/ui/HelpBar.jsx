@@ -8,6 +8,7 @@ export default function HelpBar() {
     <div className="help-bar" aria-label="Controls">
       <span><kbd>WASD</kbd> move</span>
       <span><kbd>E</kbd> inspect</span>
+      <span><kbd>T</kbd> time</span>
       <span><kbd>Esc</kbd> release mouse</span>
     </div>
   )

@@ -21,7 +21,7 @@ export default function Onboarding() {
         <div className="onboarding__actions">
           <button id="enter-world" className="button" onClick={enter}>Enter the landscape</button>
         </div>
-        <p className="onboarding__note">Mouse look · WASD or arrow keys · E to inspect</p>
+        <p className="onboarding__note">Mouse look · WASD or arrow keys · E to inspect · T changes time</p>
       </div>
       <p className="onboarding__disclosure">
         The guide’s answers are generated from cited archive records. Voice, when enabled, is synthetic.

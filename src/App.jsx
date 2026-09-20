@@ -48,6 +48,7 @@ function Experience({ content }) {
   const nearestArtifact = useExperienceStore((state) => state.nearestArtifact)
   const hasEntered = useExperienceStore((state) => state.hasEntered)
   const currentZone = useExperienceStore((state) => state.currentZone)
+  const cycleTimeOfDay = useExperienceStore((state) => state.cycleTimeOfDay)
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -55,10 +56,11 @@ function Experience({ content }) {
       if (event.code === 'KeyE' && nearestArtifact && !activeArtifact) {
         setActiveArtifact(nearestArtifact)
       }
+      if (event.code === 'KeyT' && !event.repeat) cycleTimeOfDay()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeArtifact, nearestArtifact, setActiveArtifact])
+  }, [activeArtifact, cycleTimeOfDay, nearestArtifact, setActiveArtifact])
 
   const zone = content.zones.find((item) => item.id === currentZone) ?? content.zones[0]
 

@@ -18,7 +18,7 @@ GLBs have not been supplied remain visible as faceted stone proxies.
 - Select **Enter the landscape** to opt into mouse look.
 - Use `WASD` or the arrow keys to move. Hold `Shift` to move faster.
 - Walk near an object and press `E` to open its record.
-- Use the **Time of day** control to switch between dawn, day, dusk, and night.
+- Use the **Time of day** control or press `T` to cycle through dawn, day, dusk, and night.
 - Press `Esc` to close a record or release the mouse.
 
 ## What is real and what is not
