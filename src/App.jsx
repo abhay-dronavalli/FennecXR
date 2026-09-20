@@ -4,7 +4,6 @@ import Scene from './world/Scene.jsx'
 import Onboarding from './ui/Onboarding.jsx'
 import InfoPanel from './ui/InfoPanel.jsx'
 import HelpBar from './ui/HelpBar.jsx'
-import TextTour from './ui/TextTour.jsx'
 import { useExperienceStore } from './store.js'
 
 const controls = [
@@ -31,9 +30,9 @@ class SceneBoundary extends Component {
       return (
         <main className="scene-fallback">
           <p className="kicker">3D unavailable</p>
-          <h1>The archive still works without WebGL.</h1>
-          <p>Open the text tour for every artifact, source, and credit.</p>
-          <a className="button button--light" href="/text">Read the text tour</a>
+          <h1>This landscape needs WebGL.</h1>
+          <p>Enable hardware acceleration in your browser, then reload the experience.</p>
+          <button className="button button--light" onClick={() => window.location.reload()}>Reload</button>
         </main>
       )
     }
@@ -66,12 +65,10 @@ function Experience({ content }) {
 
   return (
     <div className="experience-shell">
-      <a className="skip-link" href="/text">Skip 3D and read as text</a>
       <header className="site-mark" aria-label="Carthage Underfoot">
         <span className="site-mark__title">Carthage Underfoot</span>
         <span className="site-mark__place">{zone.name}</span>
       </header>
-      <a className="text-tour-link" href="/text">Read as text</a>
       {interpretationVisible && (
         <div className="interpretation-banner" role="status">
           <strong>Interpretation layer</strong> — a modern guess at what these fragments belonged to. Not scanned, not documented. Toggle off with G.
@@ -121,7 +118,5 @@ export default function App() {
   }
 
   if (!content) return <div className="loading-screen" role="status">Preparing the archive…</div>
-  if (window.location.pathname.replace(/\/$/, '') === '/text') return <TextTour content={content} />
-
   return <Experience content={content} />
 }

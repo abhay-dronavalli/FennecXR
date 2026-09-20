@@ -1,3 +1,6 @@
+import { useGLTF } from '@react-three/drei'
+import { Component, Suspense, useMemo } from 'react'
+import * as THREE from 'three'
 import { palette } from '../palette.js'
 import { useExperienceStore } from '../store.js'
 
@@ -12,9 +15,72 @@ function PlaceholderGeometry({ type }) {
   return <icosahedronGeometry args={[0.8, 0]} />
 }
 
+function Placeholder({ artifact, onOpen }) {
+  return (
+    <mesh
+      castShadow
+      receiveShadow
+      onClick={onOpen}
+      onPointerEnter={() => { document.body.style.cursor = 'pointer' }}
+      onPointerLeave={() => { document.body.style.cursor = '' }}
+    >
+      <PlaceholderGeometry type={artifact.placeholder} />
+      <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+    </mesh>
+  )
+}
+
+function ScannedModel({ url, onOpen }) {
+  const { scene } = useGLTF(url)
+  const clonedScene = useMemo(() => scene.clone(true), [scene])
+
+  useMemo(() => {
+    clonedScene.traverse((object) => {
+      if (!object.isMesh) return
+      object.castShadow = true
+      object.receiveShadow = true
+      if (object.material) {
+        object.material.side = THREE.FrontSide
+        object.material.needsUpdate = true
+      }
+    })
+  }, [clonedScene])
+
+  return (
+    <primitive
+      object={clonedScene}
+      onClick={onOpen}
+      onPointerEnter={() => { document.body.style.cursor = 'pointer' }}
+      onPointerLeave={() => { document.body.style.cursor = '' }}
+    />
+  )
+}
+
+class ModelBoundary extends Component {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  componentDidCatch(error) {
+    console.warn('Artifact model failed; using its geometric placeholder.', error)
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
+
 export default function Artifact({ artifact }) {
   const setActiveArtifact = useExperienceStore((state) => state.setActiveArtifact)
   const interpretationVisible = useExperienceStore((state) => state.interpretationVisible)
+
+  const handleOpen = (event) => {
+    event.stopPropagation()
+    setActiveArtifact(artifact)
+  }
+  const placeholder = <Placeholder artifact={artifact} onOpen={handleOpen} />
 
   return (
     <group position={artifact.position} rotation={artifact.rotation} scale={artifact.scale}>
@@ -24,19 +90,13 @@ export default function Artifact({ artifact }) {
           <meshStandardMaterial color={palette.stoneDark} flatShading />
         </mesh>
       )}
-      <mesh
-        castShadow
-        receiveShadow
-        onClick={(event) => {
-          event.stopPropagation()
-          setActiveArtifact(artifact)
-        }}
-        onPointerEnter={() => { document.body.style.cursor = 'pointer' }}
-        onPointerLeave={() => { document.body.style.cursor = '' }}
-      >
-        <PlaceholderGeometry type={artifact.placeholder} />
-        <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
-      </mesh>
+      {artifact.model ? (
+        <ModelBoundary fallback={placeholder}>
+          <Suspense fallback={placeholder}>
+            <ScannedModel url={artifact.model} onOpen={handleOpen} />
+          </Suspense>
+        </ModelBoundary>
+      ) : placeholder}
       {interpretationVisible && artifact.id === 'corinthian-capital-byrsa' && (
         <mesh position={[0, 2.8, 0]}>
           <cylinderGeometry args={[0.6, 0.72, 5.2, 8]} />

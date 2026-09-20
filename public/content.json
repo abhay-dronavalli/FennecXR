@@ -5,6 +5,29 @@
     "archiveUrl": "https://tanitxr.org/archive/",
     "honestyNote": "Scanned artifacts are real documentation. The low-poly terrain, walls, columns, vegetation, placeholders, and artifact placements are modern abstractions, not archaeological reconstructions."
   },
+  "architectureStudies": [
+    {
+      "id": "great-mosque-kairouan",
+      "title": "Great Mosque of Kairouan",
+      "place": "Kairouan, Tunisia — not Carthage",
+      "note": "A source-based silhouette study of the mosque's quadrilateral enclosure, courtyard, porticoes, and square three-storey minaret. It is not a measured reconstruction.",
+      "source": { "label": "UNESCO — Kairouan", "url": "https://whc.unesco.org/en/list/499" }
+    },
+    {
+      "id": "dougga-capitol",
+      "title": "Capitol of Dougga",
+      "place": "Dougga, Tunisia — not Carthage",
+      "note": "A source-based silhouette study of the Capitol's raised sanctuary and six-column front. It is not a measured reconstruction.",
+      "source": { "label": "UNESCO — Dougga / Thugga", "url": "https://whc.unesco.org/en/list/794" }
+    },
+    {
+      "id": "antonine-baths",
+      "title": "Antonine Baths",
+      "place": "Carthage, Tunisia",
+      "note": "A source-based diagram of a symmetrical seaside bath complex. It does not reconstruct undocumented walls, roofs, or decoration.",
+      "source": { "label": "Tunisia heritage agency — Antonine Baths", "url": "https://www.patrimoinedetunisie.com.tn/en/monuments/the-antoninian-baths/overview/" }
+    }
+  ],
   "zones": [
     {
       "id": "byrsa",

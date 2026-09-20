@@ -20,7 +20,6 @@ export default function Onboarding() {
         </p>
         <div className="onboarding__actions">
           <button id="enter-world" className="button" onClick={enter}>Enter the landscape</button>
-          <a className="button button--quiet" href="/text">Read as text</a>
         </div>
         <p className="onboarding__note">Mouse look · WASD or arrow keys · E to inspect</p>
       </div>

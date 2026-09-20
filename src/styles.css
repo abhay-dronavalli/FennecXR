@@ -25,41 +25,19 @@ a { color: inherit; }
 .experience-shell { position: fixed; inset: 0; overflow: hidden; background: var(--sky-high); }
 .experience-shell canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-.skip-link {
-  position: fixed;
-  z-index: 100;
-  top: 0.75rem;
-  left: 50%;
-  padding: 0.65rem 1rem;
-  transform: translate(-50%, -180%);
-  background: var(--focus);
-  color: var(--ink);
-  font-weight: 700;
-}
-.skip-link:focus { transform: translate(-50%, 0); }
-
 .site-mark {
   position: fixed;
   z-index: 4;
   top: 1.25rem;
   left: 1.5rem;
   display: grid;
+  padding: 0.55rem 0.7rem;
+  background: rgb(36 29 22 / 72%);
   color: var(--paper);
   text-shadow: 0 2px 12px rgb(36 29 22 / 45%);
 }
 .site-mark__title { font-family: Georgia, "Times New Roman", serif; font-size: 1.3rem; }
 .site-mark__place { font-size: 0.78rem; }
-.text-tour-link {
-  position: fixed;
-  z-index: 4;
-  top: 1.25rem;
-  right: 1.5rem;
-  border-bottom: 1px solid currentColor;
-  color: var(--paper);
-  font-size: 0.82rem;
-  text-decoration: none;
-  text-shadow: 0 2px 12px rgb(36 29 22 / 45%);
-}
 
 .onboarding {
   position: fixed;
@@ -73,7 +51,7 @@ a { color: inherit; }
   color: var(--paper);
 }
 .onboarding__copy { grid-column: 2; max-width: 39rem; padding: 3rem 0; }
-.onboarding__copy h1, .text-tour h1, .text-tour h2, .info-panel h2 {
+.onboarding__copy h1, .info-panel h2 {
   margin: 0.3rem 0 1.25rem;
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
@@ -154,6 +132,25 @@ a { color: inherit; }
   font-size: 0.8rem;
 }
 
+.study-label-wrap { pointer-events: none; }
+.study-label,
+.study-heading {
+  display: grid;
+  width: max-content;
+  max-width: 15rem;
+  border-left: 2px solid var(--sky-warm);
+  padding: 0.5rem 0.65rem;
+  background: rgb(36 29 22 / 88%);
+  color: var(--paper);
+  box-shadow: 0 8px 22px rgb(36 29 22 / 20%);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+.study-label span,
+.study-label small,
+.study-heading span { color: var(--stone); font-size: 0.6rem; }
+.study-heading { border-left-color: var(--paper); text-align: center; }
+
 .info-panel {
   position: fixed;
   z-index: 20;
@@ -187,24 +184,6 @@ a { color: inherit; }
 .scene-fallback h1 { max-width: 18ch; margin: 0; font: 400 clamp(2.5rem, 7vw, 5rem)/1 Georgia, serif; }
 .scene-fallback p { max-width: 35rem; }
 
-.text-tour { min-height: 100vh; background: var(--sand); color: var(--ink); }
-.text-tour__header { min-height: 72vh; display: grid; align-content: end; padding: clamp(2rem, 8vw, 8rem); background: var(--ink); color: var(--paper); }
-.text-tour__header h1 { margin: 0; font-size: clamp(4rem, 13vw, 10rem); letter-spacing: -0.065em; }
-.text-tour__intro { max-width: 44rem; font: 1.2rem/1.6 Georgia, serif; }
-.back-link { position: absolute; top: 1.5rem; right: 1.5rem; color: var(--paper); }
-.verification-note { max-width: 44rem; border-left: 2px solid var(--sky-warm); padding-left: 1rem; color: var(--stone); font-size: 0.8rem; }
-.text-zone { display: grid; grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.6fr); gap: clamp(2rem, 7vw, 7rem); padding: clamp(3rem, 8vw, 8rem); border-bottom: 1px solid var(--stone-dark); }
-.text-zone > header { position: sticky; top: 2rem; align-self: start; }
-.text-zone h2 { font-size: clamp(2.5rem, 5vw, 5rem); letter-spacing: -0.045em; }
-.text-zone__count { color: var(--cypress); font-size: 0.75rem; font-weight: 700; }
-.artifact-list { border-top: 1px solid var(--stone-dark); }
-.text-artifact { padding: 2rem 0; border-bottom: 1px solid var(--stone-dark); }
-.text-artifact h3 { margin: 0.2rem 0 0.8rem; font: 400 clamp(1.7rem, 4vw, 2.7rem)/1.1 Georgia, serif; }
-.text-artifact > p { max-width: 46rem; }
-.text-interpretation { color: #5e4d3e; font-style: italic; }
-.text-credit { color: #5e4d3e; font-size: 0.78rem; }
-.text-tour__footer { padding: 3rem clamp(2rem, 8vw, 8rem); background: var(--ink); color: var(--stone); }
-
 @media (max-width: 720px) {
   .onboarding { grid-template-columns: 1.25rem 1fr 1.25rem; background: rgb(36 29 22 / 86%); }
   .onboarding__copy h1 { font-size: clamp(2.8rem, 14vw, 4.7rem); }
@@ -212,9 +191,6 @@ a { color: inherit; }
   .help-bar { width: calc(100% - 1rem); justify-content: space-around; gap: 0.25rem; }
   .help-bar span:last-child { display: none; }
   .site-mark { top: 1rem; left: 1rem; }
-  .text-tour-link { top: 1rem; right: 1rem; }
-  .text-zone { grid-template-columns: 1fr; }
-  .text-zone > header { position: static; }
 }
 
 @media (prefers-reduced-motion: reduce) {

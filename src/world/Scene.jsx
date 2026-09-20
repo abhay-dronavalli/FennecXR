@@ -1,4 +1,4 @@
-import { AdaptiveDpr, PointerLockControls } from '@react-three/drei'
+import { AdaptiveDpr, PointerLockControls, Sky } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Suspense, useMemo } from 'react'
 import * as THREE from 'three'
@@ -8,6 +8,7 @@ import Player from './Player.jsx'
 import Terrain from './Terrain.jsx'
 import Props from './Props.jsx'
 import Artifact from './Artifact.jsx'
+import ArchitectureStudies from './ArchitectureStudies.jsx'
 
 function World({ content }) {
   const setNearestArtifact = useExperienceStore((state) => state.setNearestArtifact)
@@ -56,7 +57,15 @@ function World({ content }) {
   return (
     <>
       <color attach="background" args={[palette.skyHigh]} />
-      <fog attach="fog" args={[palette.skyWarm, 42, 105]} />
+      <Sky
+        distance={450000}
+        sunPosition={[-100, 20, 65]}
+        turbidity={4.5}
+        rayleigh={1.7}
+        mieCoefficient={0.003}
+        mieDirectionalG={0.82}
+      />
+      <fog attach="fog" args={[palette.skyWarm, 68, 160]} />
       <hemisphereLight args={[palette.skyHigh, palette.stoneDark, 1.35]} />
       <directionalLight
         castShadow
@@ -71,6 +80,7 @@ function World({ content }) {
       />
       <Terrain />
       <Props />
+      <ArchitectureStudies studies={content.architectureStudies} />
       {content.artifacts.map((artifact) => <Artifact key={artifact.id} artifact={artifact} />)}
       <Player />
       <PointerLockControls selector="#enter-world" />
@@ -83,13 +93,13 @@ export default function Scene({ content }) {
     <Canvas
       aria-hidden="true"
       shadows={{ type: THREE.PCFSoftShadowMap }}
-      camera={{ position: content.zones[0].spawn, fov: 60, near: 0.1, far: 180 }}
+      camera={{ position: content.zones[0].spawn, fov: 60, near: 0.1, far: 260 }}
       dpr={[0.75, 1.5]}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
         gl.outputColorSpace = THREE.SRGBColorSpace
         gl.toneMapping = THREE.ACESFilmicToneMapping
-        gl.toneMappingExposure = 1.05
+        gl.toneMappingExposure = 0.82
       }}
     >
       <Suspense fallback={null}>
