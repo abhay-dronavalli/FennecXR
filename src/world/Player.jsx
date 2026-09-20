@@ -38,14 +38,20 @@ export default function Player() {
   useFrame((_, rawDelta) => {
     if (teleportTarget) {
       const ax = teleportTarget[0]
+      const ay = teleportTarget[1]
       const az = teleportTarget[2]
-      // Place player 3 units away from artifact, facing toward it
-      const dist = Math.sqrt(ax * ax + az * az) || 1
-      const offsetX = (ax / dist) * 3
-      const offsetZ = (az / dist) * 3
-      camera.position.set(ax + offsetX, 1.7, az + offsetZ)
+      // Determine building center based on zone (encoded in teleportTarget[3])
+      // Temple center ≈ (0, 0, 0), Tunisia-details center ≈ (0, 0, -24.5)
+      const isTemple = az > -15
+      const cx = 0
+      const cz = isTemple ? 0 : -24.5
+      // Offset player 3 units from artifact toward building center
+      const dx = cx - ax
+      const dz = cz - az
+      const len = Math.sqrt(dx * dx + dz * dz) || 1
+      camera.position.set(ax + (dx / len) * 3, 1.7, az + (dz / len) * 3)
       // Look at the artifact
-      camera.lookAt(ax, 1.7, az)
+      camera.lookAt(ax, ay, az)
       setTeleportTarget(null)
       return
     }

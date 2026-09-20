@@ -124,10 +124,12 @@ export default function Pamphlet({ content, archiveDb }) {
   const setTeleportTarget = useExperienceStore((s) => s.setTeleportTarget)
   const hasEntered        = useExperienceStore((s) => s.hasEntered)
 
-  const allArtifacts = content.artifacts.map((world) => {
-    const db = archiveDb.find((a) => a.id === world.id)
-    return { ...world, period: db?.period ?? null, material: db?.material ?? null }
-  })
+  const allArtifacts = content.artifacts
+    .filter((a) => a.model || a.id === 'bird-of-prey-villas')
+    .map((world) => {
+      const db = archiveDb.find((a) => a.id === world.id)
+      return { ...world, period: db?.period ?? null, material: db?.material ?? null }
+    })
 
   const [previewed, setPreviewed]   = useState(null)
   const [query, setQuery]           = useState('')
