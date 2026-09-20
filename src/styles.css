@@ -169,7 +169,7 @@ a { color: inherit; }
 .time-control {
   position: fixed;
   z-index: 6;
-  top: 1.25rem;
+  bottom: 3.5rem;
   right: 1.25rem;
   margin: 0;
   border: 1px solid var(--hud-border);
@@ -481,7 +481,7 @@ a { color: inherit; }
   .help-bar { width: calc(100% - 1rem); justify-content: space-around; gap: 0.25rem; }
   .help-bar span:last-child { display: none; }
   .site-mark { top: 1rem; left: 1rem; }
-  .time-control { top: 5.25rem; right: 0.75rem; }
+  .time-control { bottom: 3.5rem; right: 0.75rem; }
   .time-control button { padding-inline: 0.42rem; }
 }
 

@@ -8,9 +8,10 @@ export default function HelpBar() {
     <div className="help-bar" aria-label="Controls">
       <span><kbd>WASD</kbd> move</span>
       <span><kbd>E</kbd> inspect</span>
-      <span><kbd>G</kbd> layers</span>
+      <span><kbd>G</kbd> guide</span>
       <span><kbd>,</kbd><kbd>.</kbd> track  <kbd>M</kbd> mute</span>
       <span><kbd>T</kbd> time</span>
+      <span><kbd>H</kbd> hide HUD</span>
       <span><kbd>Esc</kbd> release mouse</span>
     </div>
   )

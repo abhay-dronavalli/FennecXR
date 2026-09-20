@@ -23,4 +23,8 @@ export const useExperienceStore = create((set) => ({
   setPamphletOpen: (v) => set({ pamphletOpen: v }),
   teleportTarget: null,
   setTeleportTarget: (pos) => set({ teleportTarget: pos }),
+  savedCameraPos: null,
+  setSavedCameraPos: (pos) => set({ savedCameraPos: pos }),
+  hudHidden: false,
+  toggleHud: () => set((state) => ({ hudHidden: !state.hudHidden })),
 }))

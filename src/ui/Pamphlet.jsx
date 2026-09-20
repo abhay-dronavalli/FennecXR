@@ -170,7 +170,14 @@ export default function Pamphlet({ content, archiveDb }) {
 
   const handleTeleport = (artifact) => {
     if (!artifact.position) return
-    setTeleportTarget(artifact.position)
+    const [x, y, z] = artifact.position
+    // Temple-zone artifacts are rendered inside a group rotated by Math.PI,
+    // so we must apply the same 180° rotation to get the real world position.
+    if (artifact.zone === 'temple') {
+      setTeleportTarget([-x, y, -z])
+    } else {
+      setTeleportTarget([x, y, z])
+    }
     setPamphletOpen(false)
     setTimeout(() => {
       document.querySelector('.experience-shell canvas')?.requestPointerLock?.()
@@ -179,15 +186,6 @@ export default function Pamphlet({ content, archiveDb }) {
 
   return (
     <>
-      <button
-        className={`pamphlet-trigger${(!hasEntered || pamphletOpen) ? ' pamphlet-trigger--hidden' : ''}`}
-        onClick={() => { document.exitPointerLock?.(); setPamphletOpen(true) }}
-        aria-label="Open collection guide"
-      >
-        <span className="pamphlet-trigger__arrow">↑</span>
-        <span className="pamphlet-trigger__label">Guide</span>
-      </button>
-
       <div
         className={`pamphlet${pamphletOpen ? ' pamphlet--open' : ''}`}
         role="dialog"

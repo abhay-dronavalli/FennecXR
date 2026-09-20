@@ -54,6 +54,8 @@ function Experience({ content, archiveDb }) {
   const cycleTimeOfDay  = useExperienceStore((state) => state.cycleTimeOfDay)
   const pamphletOpen    = useExperienceStore((state) => state.pamphletOpen)
   const setPamphletOpen = useExperienceStore((state) => state.setPamphletOpen)
+  const hudHidden       = useExperienceStore((state) => state.hudHidden)
+  const toggleHud       = useExperienceStore((state) => state.toggleHud)
   const [pointerLocked, setPointerLocked] = useState(document.pointerLockElement != null)
   const [viewerArtifact, setViewerArtifact] = useState(null)
 
@@ -83,21 +85,28 @@ function Experience({ content, archiveDb }) {
         setActiveArtifact(nearestArtifact)
       }
       if (event.code === 'KeyT' && !event.repeat && !pamphletOpen) cycleTimeOfDay()
+      if (event.code === 'KeyG' && !event.repeat && !activeArtifact) {
+        if (pamphletOpen) { setPamphletOpen(false) }
+        else { document.exitPointerLock?.(); setPamphletOpen(true) }
+      }
+      if (event.code === 'KeyH' && !event.repeat) toggleHud()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [activeArtifact, closeArtifact, cycleTimeOfDay,
-      nearestArtifact, pamphletOpen, setActiveArtifact, setPamphletOpen])
+      nearestArtifact, pamphletOpen, setActiveArtifact, setPamphletOpen, toggleHud])
 
   const zone = content.zones.find((item) => item.id === currentZone) ?? content.zones[0]
 
   return (
     <div className="experience-shell">
-      <header className="site-mark" aria-label="Carthage Underfoot">
-        <span className="site-mark__title">Carthage Underfoot</span>
-        <span className="site-mark__place">{zone.name}</span>
-      </header>
-      {!viewerArtifact && <TimeOfDayControl />}
+      {!hudHidden && (
+        <header className="site-mark" aria-label="Carthage Underfoot">
+          <span className="site-mark__title">Carthage Underfoot</span>
+          <span className="site-mark__place">{zone.name}</span>
+        </header>
+      )}
+      {!viewerArtifact && !hudHidden && <TimeOfDayControl />}
       {!viewerArtifact && (
         <SceneBoundary>
           <KeyboardControls map={controls}>
@@ -106,7 +115,7 @@ function Experience({ content, archiveDb }) {
         </SceneBoundary>
       )}
       {!viewerArtifact && <LoadingStatus />}
-      {hasEntered && <div className="crosshair" aria-hidden="true" />}
+      {hasEntered && !hudHidden && <div className="crosshair" aria-hidden="true" />}
       {hasEntered && !activeArtifact && !pointerLocked && (
         <button className="resume-prompt" onClick={resumeWorld}>
           <strong>Resume exploring</strong>
@@ -119,7 +128,7 @@ function Experience({ content, archiveDb }) {
           <span><strong>{nearestArtifact.title}</strong><small>Open artifact record</small></span>
         </button>
       )}
-      <MusicPlayer />
+      {!hudHidden && <MusicPlayer />}
       <Pamphlet content={content} archiveDb={archiveDb} />
       <Onboarding />
       {activeArtifact && !viewerArtifact && (
@@ -136,7 +145,7 @@ function Experience({ content, archiveDb }) {
           onClose={() => setViewerArtifact(null)}
         />
       )}
-      <HelpBar />
+      {!hudHidden && <HelpBar />}
     </div>
   )
 }

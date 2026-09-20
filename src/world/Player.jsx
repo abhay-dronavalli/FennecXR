@@ -1,6 +1,6 @@
 import { useKeyboardControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { useExperienceStore } from '../store.js'
 
@@ -15,11 +15,37 @@ export default function Player() {
   const pamphletOpen      = useExperienceStore((state) => state.pamphletOpen)
   const teleportTarget    = useExperienceStore((state) => state.teleportTarget)
   const setTeleportTarget = useExperienceStore((state) => state.setTeleportTarget)
+  const savedCameraPos    = useExperienceStore((state) => state.savedCameraPos)
+  const setSavedCameraPos = useExperienceStore((state) => state.setSavedCameraPos)
   const previous = useRef(camera.position.clone())
+
+  // Restore camera position when remounting after 3D viewer
+  useEffect(() => {
+    if (savedCameraPos) {
+      camera.position.set(savedCameraPos[0], savedCameraPos[1], savedCameraPos[2])
+      setSavedCameraPos(null)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Save camera position on unmount (before 3D viewer takes over)
+  useEffect(() => {
+    return () => {
+      const pos = [camera.position.x, camera.position.y, camera.position.z]
+      setSavedCameraPos(pos)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useFrame((_, rawDelta) => {
     if (teleportTarget) {
-      camera.position.set(teleportTarget[0], 1.7, teleportTarget[2] + 3)
+      const ax = teleportTarget[0]
+      const az = teleportTarget[2]
+      // Place player 3 units away from artifact, facing toward it
+      const dist = Math.sqrt(ax * ax + az * az) || 1
+      const offsetX = (ax / dist) * 3
+      const offsetZ = (az / dist) * 3
+      camera.position.set(ax + offsetX, 1.7, az + offsetZ)
+      // Look at the artifact
+      camera.lookAt(ax, 1.7, az)
       setTeleportTarget(null)
       return
     }
