@@ -110,6 +110,8 @@ function Player({
 
   useEffect(() => {
     camera.position.set(SPAWN[0], SPAWN[1], SPAWN[2]);
+    // Face the signpost at the world centre, so the first frame orients you.
+    camera.lookAt(0, 4.6, 0);
   }, [camera]);
 
   useEffect(() => {
@@ -314,6 +316,83 @@ function ZoneBuild({ zone }: { zone: Zone }) {
   );
 }
 
+/* --------------------------------------------------------- spawn plaza */
+
+/**
+ * A signpost at the world centre. Without it a first-time visitor spawns on an
+ * empty plain with no idea which way anything is.
+ */
+function Signpost() {
+  const arms = ZONES.filter((z) => z.id !== "unplaced").concat(
+    ZONES.filter((z) => z.id === "unplaced")
+  );
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <circleGeometry args={[9, 32]} />
+        <meshLambertMaterial color={STONE_DARK} />
+      </mesh>
+      <mesh position={[0, 3, 0]} geometry={geoBox} material={matStone} scale={[0.5, 6, 0.5]} />
+
+      {arms.map((z, i) => {
+        const bearing = Math.atan2(z.center[0], z.center[1]);
+        const dist = Math.round(Math.hypot(z.center[0], z.center[1]));
+        const y = 5.3 - i * 0.82;
+        return (
+          <group key={z.id} rotation={[0, bearing, 0]} position={[0, y, 0]}>
+            <mesh position={[0, 0, 2.3]} geometry={geoBox} scale={[0.14, 0.62, 4.4]} material={matStone} />
+            {/* One copy per face, each front-facing only, so the mirrored
+                copy never bleeds through from the other side. */}
+            {[
+              [0, 4.46],
+              [Math.PI, 4.34],
+            ].map(([ry, zz]) => (
+              <Text
+                key={ry}
+                position={[0, 0, zz]}
+                rotation={[0, ry, 0]}
+                fontSize={0.5}
+                letterSpacing={0.04}
+                color="#2d2419"
+                anchorX="center"
+                anchorY="middle"
+                material-side={THREE.FrontSide}
+                material-transparent={false}
+              >
+                {`${z.short.toUpperCase()}  ${dist}m`}
+              </Text>
+            ))}
+          </group>
+        );
+      })}
+
+      <Text
+        position={[0, 7.2, 0]}
+        fontSize={1.1}
+        color="#2d2419"
+        outlineWidth={0.04}
+        outlineColor="#f3ead9"
+        anchorX="center"
+        anchorY="middle"
+      >
+        IFRIQIYA
+      </Text>
+      <Text
+        position={[0, 6.3, 0]}
+        fontSize={0.42}
+        color="#4a3d2b"
+        outlineWidth={0.02}
+        outlineColor="#f3ead9"
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={16}
+      >
+        Bearings are real. Distances are compressed for walking.
+      </Text>
+    </group>
+  );
+}
+
 /* -------------------------------------------------------------- artifact */
 
 function LocalModel({ uid, reduceMotion }: { uid: string; reduceMotion: boolean }) {
@@ -339,8 +418,15 @@ function LocalModel({ uid, reduceMotion }: { uid: string; reduceMotion: boolean 
   );
 }
 
-function Thumb({ url, alt }: { url: string; alt: string }) {
-  const [tex, setTex] = useState<THREE.Texture | null>(null);
+/**
+ * A framed card carrying the Sketchfab thumbnail, for any model without a
+ * local .glb. Sized from the image's own aspect ratio once it has decoded.
+ */
+function ThumbCard({ url }: { url: string }) {
+  const [state, setState] = useState<{ tex: THREE.Texture; ar: number } | null>(
+    null
+  );
+
   useEffect(() => {
     let dead = false;
     const loader = new THREE.TextureLoader();
@@ -353,23 +439,41 @@ function Thumb({ url, alt }: { url: string; alt: string }) {
           return;
         }
         t.colorSpace = THREE.SRGBColorSpace;
-        setTex(t);
+        const img = t.image as { width?: number; height?: number } | undefined;
+        const ar =
+          img && img.width && img.height ? img.width / img.height : 16 / 9;
+        setState({ tex: t, ar });
       },
       undefined,
-      () => {}
+      () => {
+        /* a thumbnail that will not load just leaves the frame empty */
+      }
     );
     return () => {
       dead = true;
     };
   }, [url]);
 
-  if (!tex) return null;
-  const img = tex.image as { width: number; height: number };
-  const ar = img && img.height ? img.width / img.height : 1;
+  const h = 1.5;
+  const w = h * (state?.ar ?? 16 / 9);
+
   return (
-    <mesh position={[0, 2.3, 0]} geometry={geoPlane} scale={[1.9 * ar, 1.9, 1]}>
-      <meshBasicMaterial map={tex} toneMapped={false} transparent />
-    </mesh>
+    <group position={[0, 2.5, 0]}>
+      {/* frame */}
+      <mesh geometry={geoBox} material={matPlinth} scale={[w + 0.16, h + 0.16, 0.08]} />
+      {state && (
+        <mesh position={[0, 0, 0.05]} geometry={geoPlane} scale={[w, h, 1]}>
+          <meshBasicMaterial map={state.tex} toneMapped={false} />
+        </mesh>
+      )}
+      {/* stem down to the plinth */}
+      <mesh
+        position={[0, -h / 2 - 0.5, 0]}
+        geometry={geoBox}
+        material={matPlinth}
+        scale={[0.1, 1.05, 0.1]}
+      />
+    </group>
   );
 }
 
@@ -404,21 +508,16 @@ function Artifact({
             <LocalModel uid={model.uid} reduceMotion={reduceMotion} />
           </group>
         </Suspense>
+      ) : showThumb && model.thumbnail ? (
+        <ThumbCard url={model.thumbnail} />
       ) : (
-        <>
-          <mesh
-            position={[0, 1.55, 0]}
-            geometry={geoBox}
-            material={matGhost}
-            scale={[1.1, 1.1, 1.1]}
-          />
-          {showThumb && model.thumbnail && (
-            <Thumb url={model.thumbnail} alt={model.name} />
-          )}
-          <mesh position={[0, 3.6, 0]} geometry={geoBox} scale={[0.14, 0.9, 0.14]}>
-            <meshBasicMaterial color={near ? "#ffd27f" : "#8f7a55"} />
-          </mesh>
-        </>
+        // Too far away to be worth a thumbnail download: a marker post only.
+        <mesh
+          position={[0, 2.1, 0]}
+          geometry={geoBox}
+          material={matGhost}
+          scale={[0.9, 2.2, 0.35]}
+        />
       )}
     </group>
   );
@@ -547,6 +646,8 @@ export function WorldCanvas({
         <circleGeometry args={[WORLD_HALF - 10, 48]} />
         <meshLambertMaterial color={SAND} />
       </mesh>
+
+      <Signpost />
 
       {ZONES.map((z) => (
         <ZoneBuild key={z.id} zone={z} />

@@ -130,7 +130,8 @@ export function About({
   const noCats = models.filter((m) => m.categories.length === 0).length;
   const thin = models.filter((m) => !isDocumented(m.description)).length;
   const unplaced = models.filter((m) => m.zone === "unplaced").length;
-  const dupes = models.filter((m) => m.duplicateOf).length;
+  const geomTwins = models.filter((m) => m.geomTwin).length;
+  const nameShared = models.filter((m) => m.nameSiblings.length > 0).length;
   const truncated = models.filter((m) => /…$/.test(m.name)).length;
 
   return (
@@ -178,9 +179,22 @@ export function About({
           inside the cut.
         </li>
         <li>
-          <strong>{dupes}</strong> records look like duplicate uploads of an
-          object already in the collection. We place them anyway and flag them
-          rather than silently merging.
+          <strong>{nameShared}</strong> records share a normalised name with at
+          least one other record but have a different triangle count. Some are
+          clearly lower-poly versions of the same scan, marked
+          &ldquo;- OPT&rdquo;; others, like the eight records all called
+          &ldquo;Punic Stelae &ndash; Tophet of Salammbo&rdquo;, look like
+          genuinely different objects filed under one name.{" "}
+          <strong>
+            Nothing in the metadata distinguishes a second version of an object
+            from a second object.
+          </strong>{" "}
+          That is the collection's most consequential gap, and it is why we
+          flag rather than merge.
+        </li>
+        <li>
+          <strong>{geomTwins}</strong> records have byte-identical triangle and
+          vertex counts to another record &mdash; near-certain double uploads.
         </li>
         <li>
           <strong>{unplaced}</strong> records name no site in either their name
@@ -247,6 +261,48 @@ export function About({
   );
 }
 
+/* ------------------------------------------------------- ambiguity note */
+
+/**
+ * The collection cannot distinguish a second version of an object from a
+ * different object with the same name. We say exactly that, and merge nothing.
+ */
+export function Ambiguity({
+  model,
+  byUid,
+}: {
+  model: PlacedModel;
+  byUid: Map<string, PlacedModel>;
+}) {
+  if (!model.nameSiblings.length && !model.geomTwin) return null;
+  const twin = model.geomTwin ? byUid.get(model.geomTwin) : null;
+
+  return (
+    <p className="warn">
+      {twin && (
+        <>
+          <strong>Identical geometry</strong> to &ldquo;{twin.name}&rdquo; &mdash;
+          the same {model.faceCount?.toLocaleString()} triangles and{" "}
+          {model.vertexCount?.toLocaleString()} vertices. Almost certainly one
+          scan uploaded twice.{" "}
+        </>
+      )}
+      {!!model.nameSiblings.length && (
+        <>
+          <strong>
+            Shares its name with {model.nameSiblings.length} other record
+            {model.nameSiblings.length > 1 ? "s" : ""}
+          </strong>{" "}
+          at different triangle counts. The metadata cannot tell us whether
+          those are lower-poly versions of this object or different objects
+          filed under one name.{" "}
+        </>
+      )}
+      Flagged, not merged.
+    </p>
+  );
+}
+
 /* --------------------------------------------------------------- overlay */
 
 function Overlay({
@@ -280,11 +336,13 @@ function Overlay({
 
 export function Examine({
   model,
+  byUid,
   docked,
   onClose,
   tour,
 }: {
   model: PlacedModel;
+  byUid: Map<string, PlacedModel>;
   docked?: boolean;
   onClose: () => void;
   tour?: { index: number; total: number; next: () => void; prev: () => void };
@@ -301,12 +359,7 @@ export function Examine({
         {model.zone === "unplaced" &&
           " We have not guessed a site for this object."}
       </p>
-      {model.duplicateOf && (
-        <p className="warn">
-          Possible duplicate &mdash; another record in this collection has the
-          same name and geometry. Flagged, not merged.
-        </p>
-      )}
+      <Ambiguity model={model} byUid={byUid} />
 
       <div className="viewer">
         {model.hasLocal ? (
@@ -508,7 +561,15 @@ export function Grid2D({
               )}
               <h2>{m.name}</h2>
               <p className="site">{ZONE_BY_ID[m.zone].label}</p>
-              {m.duplicateOf && <p className="warn">Possible duplicate</p>}
+              {(m.geomTwin || m.nameSiblings.length > 0) && (
+                <p className="warn">
+                  {m.geomTwin
+                    ? "Identical geometry to another record"
+                    : `Shares its name with ${m.nameSiblings.length} other record${
+                        m.nameSiblings.length > 1 ? "s" : ""
+                      }`}
+                </p>
+              )}
               {documented ? (
                 <p className="desc">{blurb(m.description, 260)}</p>
               ) : (
@@ -569,7 +630,10 @@ export function CollectionIndex({
                   <button onClick={() => onPick(m)}>
                     <span>{m.name}</span>
                     {m.hasLocal && <em className="tag">3D</em>}
-                    {m.duplicateOf && <em className="tag dup">possible duplicate</em>}
+                    {m.geomTwin && <em className="tag dup">identical geometry</em>}
+                    {!m.geomTwin && m.nameSiblings.length > 0 && (
+                      <em className="tag dup">shared name</em>
+                    )}
                     {!isDocumented(m.description) && (
                       <em className="tag undoc">undocumented</em>
                     )}

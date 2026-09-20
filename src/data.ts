@@ -39,12 +39,17 @@ export interface PlacedModel extends ModelRecord {
   /** Y-rotation so the artifact faces the zone entrance. */
   facing: number;
   hasLocal: boolean;
-  duplicateOf?: string;
+  /** Other records sharing this one's normalised name. */
+  nameSiblings: string[];
+  /** A record with byte-identical triangle and vertex counts, if any. */
+  geomTwin: string | null;
 }
 
 export interface Zone {
   id: ZoneId;
   label: string;
+  /** Short form for the in-world signpost, where space is tight. */
+  short: string;
   sublabel: string;
   /** Real-world coordinates, or null for the unplaced pavilion. */
   latLon: [number, number] | null;
@@ -62,6 +67,7 @@ export interface Zone {
 export const ZONES: Zone[] = [
   {
     id: "carthage",
+    short: "Carthage",
     label: "Carthage",
     sublabel: "Byrsa Hill / Roman Villas / Tophet / Antonine Baths",
     latLon: [36.8528, 10.3233],
@@ -71,6 +77,7 @@ export const ZONES: Zone[] = [
   },
   {
     id: "tunis",
+    short: "Tunis",
     label: "Medina of Tunis",
     sublabel: "Zitouna Mosque / Medersa Slimanya / Zawiya",
     latLon: [36.798, 10.171],
@@ -80,6 +87,7 @@ export const ZONES: Zone[] = [
   },
   {
     id: "zaghouan",
+    short: "Zaghouan",
     label: "Water Temple, Zaghouan",
     sublabel: "Roman spring sanctuary",
     latLon: [36.373, 10.118],
@@ -89,6 +97,7 @@ export const ZONES: Zone[] = [
   },
   {
     id: "neapolis",
+    short: "Neapolis",
     label: "Neapolis",
     sublabel: "Nabeul, Cap Bon",
     latLon: [36.451, 10.735],
@@ -98,6 +107,7 @@ export const ZONES: Zone[] = [
   },
   {
     id: "kairouan",
+    short: "Kairouan",
     label: "Kairouan",
     sublabel: "Mausoleum of Sidi Sahbi - outside the northeast region",
     latLon: [35.6781, 10.0963],
@@ -107,6 +117,7 @@ export const ZONES: Zone[] = [
   },
   {
     id: "unplaced",
+    short: "Not Located",
     label: "Not Yet Located",
     sublabel: "Scans whose records name no site",
     latLon: null,
@@ -120,7 +131,7 @@ export const ZONE_BY_ID = Object.fromEntries(
   ZONES.map((z) => [z.id, z])
 ) as Record<ZoneId, Zone>;
 
-export const SPAWN: [number, number, number] = [0, 1.7, 20];
+export const SPAWN: [number, number, number] = [13, 1.7, 17];
 export const WORLD_HALF = 300;
 
 /**
@@ -175,16 +186,19 @@ export function assignZone(m: ModelRecord): { zone: ZoneId; evidence: string } {
   };
 }
 
-/** Normalised name used to detect the collection's duplicate uploads. */
-function dupKey(m: ModelRecord) {
-  return (
-    m.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
-      .replace(/(copy|opt|otp)$/g, "") +
-    "|" +
-    (m.faceCount ?? "?")
-  );
+/**
+ * Normalised name, with the upload-variant suffixes the collection uses
+ * ("- copy", "- OPT", and the one record typo'd "- OTP") stripped.
+ */
+export function nameKey(m: ModelRecord) {
+  return m.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .replace(/(copy|opt|otp)$/g, "");
+}
+
+function geomKey(m: ModelRecord) {
+  return m.faceCount && m.vertexCount ? `${m.faceCount}:${m.vertexCount}` : null;
 }
 
 /**
@@ -223,8 +237,18 @@ export function buildWorld(
   manifest: string[]
 ): PlacedModel[] {
   const local = new Set(manifest);
-  const seen = new Map<string, string>();
   const byZone = new Map<ZoneId, ModelRecord[]>();
+
+  // Two independent ambiguity signals, kept separate because they mean
+  // different things. Neither is treated as proof, and nothing is merged.
+  const byName = new Map<string, string[]>();
+  const byGeom = new Map<string, string[]>();
+  for (const m of models) {
+    const nk = nameKey(m);
+    byName.set(nk, [...(byName.get(nk) ?? []), m.uid]);
+    const gk = geomKey(m);
+    if (gk) byGeom.set(gk, [...(byGeom.get(gk) ?? []), m.uid]);
+  }
 
   for (const m of models) {
     const { zone } = assignZone(m);
@@ -244,11 +268,12 @@ export function buildWorld(
     });
     const slots = layout(zone, list.length);
     list.forEach((m, i) => {
-      const k = dupKey(m);
-      const first = seen.get(k);
-      if (!first) seen.set(k, m.uid);
       const { zone: z, evidence } = assignZone(m);
       const slot = slots[i];
+      const gk = geomKey(m);
+      const twins = (gk ? byGeom.get(gk) ?? [] : []).filter(
+        (u) => u !== m.uid
+      );
       placed.push({
         ...m,
         zone: z,
@@ -256,7 +281,8 @@ export function buildWorld(
         pos: slot ? slot.pos : [zone.center[0], 0, zone.center[1]],
         facing: slot ? slot.facing : 0,
         hasLocal: local.has(m.uid),
-        duplicateOf: first && first !== m.uid ? first : undefined,
+        nameSiblings: (byName.get(nameKey(m)) ?? []).filter((u) => u !== m.uid),
+        geomTwin: twins[0] ?? null,
       });
     });
   }

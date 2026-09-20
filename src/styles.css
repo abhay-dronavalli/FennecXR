@@ -558,8 +558,8 @@ a {
 .card .nothumb {
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background: var(--sand-deep);
+  object-fit: contain;
+  background: #ece5d6;
   border: 1px solid var(--line);
   display: block;
 }

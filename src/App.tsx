@@ -286,12 +286,17 @@ export default function App() {
       )}
 
       {examine && tourIndex === null && (
-        <Examine model={examine} onClose={() => setExamineUid(null)} />
+        <Examine
+          model={examine}
+          byUid={byUid}
+          onClose={() => setExamineUid(null)}
+        />
       )}
 
       {examine && tourIndex !== null && (
         <Examine
           model={examine}
+          byUid={byUid}
           docked
           onClose={exitTour}
           tour={{
