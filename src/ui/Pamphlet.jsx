@@ -104,7 +104,7 @@ function MagCard({ artifact, isActive, onHover, onTeleport }) {
 // ── Gemini recommendation helper ────────────────────────────────────────────
 
 async function getRecommendations(query) {
-  const res = await fetch('http://localhost:3001/api/recommend', {
+  const res = await fetch('/api/recommend', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),
