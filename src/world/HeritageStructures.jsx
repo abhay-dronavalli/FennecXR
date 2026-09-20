@@ -101,23 +101,58 @@ function Minaret({ position }) {
   )
 }
 
+function Lantern({ position }) {
+  return (
+    <group position={position}>
+      <mesh>
+        <octahedronGeometry args={[0.14, 0]} />
+        <meshStandardMaterial
+          color="#ffd89a"
+          emissive="#ff9f45"
+          emissiveIntensity={4}
+          roughness={0.5}
+        />
+      </mesh>
+      <pointLight color="#ffbd72" intensity={14} distance={7} decay={2} />
+    </group>
+  )
+}
+
 function PrayerHallRoof() {
+  const roofCourses = [-29.75, -29.2, -27.7, -27.15]
   return (
     <group>
-      <Stone position={[0, 3.35, -28.35]} scale={[21.7, 0.28, 3.35]} color={palette.stoneDark} />
-      <Stone position={[0, 3.55, -29.65]} scale={[22.3, 0.45, 0.28]} color={palette.stone} />
-      <mesh castShadow position={[0, 3.56, -28.45]}>
-        <cylinderGeometry args={[1.75, 1.95, 0.5, 8]} />
+      <Stone position={[0, 3.32, -28.4]} scale={[21.7, 0.22, 3.4]} color={palette.tileWhite} />
+      <mesh castShadow position={[0, 3.93, -27.83]} rotation={[0.42, 0, 0]}>
+        <boxGeometry args={[21.9, 0.18, 2.75]} />
+        <meshStandardMaterial color={palette.tileBlue} flatShading roughness={0.9} />
+      </mesh>
+      <mesh castShadow position={[0, 3.93, -29.07]} rotation={[-0.42, 0, 0]}>
+        <boxGeometry args={[21.9, 0.18, 2.75]} />
+        <meshStandardMaterial color={palette.tileBlue} flatShading roughness={0.9} />
+      </mesh>
+      {roofCourses.map((z) => (
+        <Stone
+          key={z}
+          position={[0, 4.48 - Math.abs(z + 28.45) * 0.43, z]}
+          scale={[22.1, 0.06, 0.09]}
+          color={palette.stoneDark}
+        />
+      ))}
+      <Stone position={[0, 4.5, -28.45]} scale={[22.3, 0.18, 0.3]} color={palette.stoneDark} />
+      <mesh castShadow position={[0, 4.42, -28.45]}>
+        <cylinderGeometry args={[1.5, 1.72, 0.5, 8]} />
         <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
       </mesh>
-      <mesh castShadow position={[0, 3.78, -28.45]}>
-        <sphereGeometry args={[1.75, 12, 5, 0, Math.PI * 2, 0, Math.PI / 2]} />
+      <mesh castShadow position={[0, 4.64, -28.45]}>
+        <sphereGeometry args={[1.5, 12, 5, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
       </mesh>
-      <mesh castShadow position={[0, 5.56, -28.45]}>
+      <mesh castShadow position={[0, 6.16, -28.45]}>
         <sphereGeometry args={[0.11, 8, 4]} />
         <meshStandardMaterial color={palette.tileBlue} roughness={0.8} />
       </mesh>
+      {[-6, 0, 6].map((x) => <Lantern key={x} position={[x, 2.7, -28.05]} />)}
     </group>
   )
 }
@@ -240,14 +275,14 @@ function TunisiaPrayerCourt() {
 
       <Stone position={[-6.7, 1.25, -19.9]} scale={[3.2, 2.75, 0.18]} color={palette.stone} />
       <Arch position={[-6.7, 0.05, -19.68]} width={2.75} height={2.95} depth={0.2} />
-      <DecorativeBand position={[-6.7, 2.83, -19.51]} width={3.2} count={10} />
-      <DecorativeBand position={[5.8, 2.55, -19.88]} width={9.8} count={24} />
+      <DecorativeBand position={[0, 2.72, -19.45]} width={24.4} count={54} />
       <Stone position={[5.8, 0.48, -19.89]} scale={[9.8, 0.12, 0.09]} color={palette.stone} />
       <Stone position={[5.8, 1.7, -19.89]} scale={[9.8, 0.08, 0.09]} color={palette.stone} />
 
       {porticoXs.map((x) => <Column key={x} position={[x, 0.08, -27.25]} height={2.5} radius={0.15} />)}
       <Stone position={[0, 2.75, -27.25]} scale={[19, 0.3, 0.55]} color={palette.stoneDark} />
-      <Stone position={[0, 3.03, -27.8]} scale={[20.5, 0.22, 1.7]} color={palette.stone} />
+      <Stone position={[0, 3.03, -27.8]} scale={[20.5, 0.22, 1.7]} color={palette.tileWhite} />
+      {[-6, 0, 6].map((x) => <Lantern key={`portico-${x}`} position={[x, 2.55, -27.15]} />)}
 
       <mesh receiveShadow position={[5, 0.13, -24.5]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[1.1, 1.45, 12]} />
