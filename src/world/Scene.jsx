@@ -142,7 +142,7 @@ function World({ content }) {
       <HeritageStructures />
       {content.artifacts.map((artifact) => <Artifact key={artifact.id} artifact={artifact} />)}
       <Player />
-      <PointerLockControls selector="#enter-world" />
+      <PointerLockControls selector=".experience-shell canvas" />
     </>
   )
 }

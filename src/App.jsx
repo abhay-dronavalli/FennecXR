@@ -1,4 +1,4 @@
-import { Component, useEffect, useState } from 'react'
+import { Component, useCallback, useEffect, useState } from 'react'
 import { KeyboardControls } from '@react-three/drei'
 import Scene from './world/Scene.jsx'
 import Onboarding from './ui/Onboarding.jsx'
@@ -49,10 +49,26 @@ function Experience({ content }) {
   const hasEntered = useExperienceStore((state) => state.hasEntered)
   const currentZone = useExperienceStore((state) => state.currentZone)
   const cycleTimeOfDay = useExperienceStore((state) => state.cycleTimeOfDay)
+  const [pointerLocked, setPointerLocked] = useState(document.pointerLockElement != null)
+
+  const resumeWorld = useCallback(() => {
+    document.querySelector('.experience-shell canvas')?.requestPointerLock?.()
+  }, [])
+
+  const closeArtifact = useCallback(() => {
+    setActiveArtifact(null)
+    resumeWorld()
+  }, [resumeWorld, setActiveArtifact])
+
+  useEffect(() => {
+    const handlePointerLockChange = () => setPointerLocked(document.pointerLockElement != null)
+    document.addEventListener('pointerlockchange', handlePointerLockChange)
+    return () => document.removeEventListener('pointerlockchange', handlePointerLockChange)
+  }, [])
 
   useEffect(() => {
     const handleKey = (event) => {
-      if (event.code === 'Escape' && activeArtifact) setActiveArtifact(null)
+      if (event.code === 'Escape' && activeArtifact) closeArtifact()
       if (event.code === 'KeyE' && nearestArtifact && !activeArtifact) {
         setActiveArtifact(nearestArtifact)
       }
@@ -60,7 +76,7 @@ function Experience({ content }) {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeArtifact, cycleTimeOfDay, nearestArtifact, setActiveArtifact])
+  }, [activeArtifact, closeArtifact, cycleTimeOfDay, nearestArtifact, setActiveArtifact])
 
   const zone = content.zones.find((item) => item.id === currentZone) ?? content.zones[0]
 
@@ -81,6 +97,12 @@ function Experience({ content }) {
       </SceneBoundary>
       <LoadingStatus />
       {hasEntered && <div className="crosshair" aria-hidden="true" />}
+      {hasEntered && !activeArtifact && !pointerLocked && (
+        <button className="resume-prompt" onClick={resumeWorld}>
+          <strong>Resume exploring</strong>
+          <small>Click to capture the mouse</small>
+        </button>
+      )}
       {hasEntered && nearestArtifact && !activeArtifact && (
         <button className="proximity-prompt" onClick={() => setActiveArtifact(nearestArtifact)}>
           <kbd>E</kbd>
@@ -88,7 +110,7 @@ function Experience({ content }) {
         </button>
       )}
       <Onboarding />
-      {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={() => setActiveArtifact(null)} />}
+      {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={closeArtifact} />}
       <HelpBar />
     </div>
   )

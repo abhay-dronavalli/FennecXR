@@ -196,6 +196,34 @@ function PrayerHallRoof({ lanternIntensity }) {
   )
 }
 
+function CourtyardGalleryRoof({ lanternIntensity }) {
+  return (
+    <group>
+      {[-1, 1].map((side) => (
+        <group key={side}>
+          <Stone
+            position={[side * 9.65, 3.08, -24.55]}
+            scale={[3.25, 0.2, 8.85]}
+            color={palette.tileWhite}
+          />
+          <Stone
+            position={[side * 9.65, 3.24, -24.55]}
+            scale={[3.45, 0.14, 9.05]}
+            color={palette.tileBlue}
+          />
+          {[-21.6, -24.5].map((z) => (
+            <Column key={z} position={[side * 8.02, 0.08, z]} height={2.75} radius={0.13} />
+          ))}
+          <Lantern
+            position={[side * 9.35, 2.62, -24.5]}
+            intensity={lanternIntensity * 0.65}
+          />
+        </group>
+      ))}
+    </group>
+  )
+}
+
 function ContextPlaque({ position, title, children }) {
   return (
     <Html center position={position} distanceFactor={4.5} className="study-label-wrap">
@@ -292,15 +320,16 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
       <Stone position={[5.8, 2.25, -29.02]} scale={[2.5, 1.65, 0.16]} color={palette.stoneDark} />
       <Stone position={[5.8, 3.17, -29]} scale={[3.1, 0.18, 0.22]} color={palette.stoneDark} />
       <PrayerHallRoof lanternIntensity={lanternIntensity} />
+      <CourtyardGalleryRoof lanternIntensity={lanternIntensity} />
       <Minaret position={[9.4, 0, -29.1]} />
 
-      <PlasterWall position={[-11.25, 1.5, -21.55]} scale={[0.46, 3, 2.8]} />
-      <PlasterWall position={[-11.25, 1.5, -27.6]} scale={[0.46, 3, 3.2]} />
-      <PlasterWall position={[11.25, 1.5, -21.55]} scale={[0.46, 3, 2.8]} />
-      <PlasterWall position={[11.25, 1.5, -27.6]} scale={[0.46, 3, 3.2]} />
+      <PlasterWall position={[-11.25, 1.5, -21.84]} scale={[0.46, 3, 3.37]} />
+      <PlasterWall position={[-11.25, 1.5, -27.34]} scale={[0.46, 3, 3.72]} />
+      <PlasterWall position={[11.25, 1.5, -21.84]} scale={[0.46, 3, 3.37]} />
+      <PlasterWall position={[11.25, 1.5, -27.34]} scale={[0.46, 3, 3.72]} />
+      <PlasterWall position={[-11.25, 2.86, -24.5]} scale={[0.46, 0.28, 1.95]} />
+      <PlasterWall position={[11.25, 2.86, -24.5]} scale={[0.46, 0.28, 1.95]} />
 
-      <Arch position={[-11.25, 0, -24.5]} rotation={[0, Math.PI / 2, 0]} width={2.6} height={3.1} />
-      <Arch position={[11.25, 0, -24.5]} rotation={[0, -Math.PI / 2, 0]} width={2.6} height={3.1} />
       <Arch position={[0, 0, -20.1]} width={3.2} height={3.4} />
       <PlasterWall position={[-7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
       <PlasterWall position={[7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />

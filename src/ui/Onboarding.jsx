@@ -5,6 +5,11 @@ export default function Onboarding() {
   const enter = useExperienceStore((state) => state.enter)
   if (hasEntered) return null
 
+  const handleEnter = () => {
+    enter()
+    document.querySelector('.experience-shell canvas')?.requestPointerLock?.()
+  }
+
   return (
     <section className="onboarding" aria-labelledby="welcome-title">
       <div className="onboarding__compass" aria-hidden="true">
@@ -19,7 +24,7 @@ export default function Onboarding() {
           textured is documentation; everything faceted is an honest abstraction.
         </p>
         <div className="onboarding__actions">
-          <button id="enter-world" className="button" onClick={enter}>Enter the landscape</button>
+          <button id="enter-world" className="button" onClick={handleEnter}>Enter the landscape</button>
         </div>
         <p className="onboarding__note">Mouse look · WASD or arrow keys · E to inspect · T changes time</p>
       </div>
