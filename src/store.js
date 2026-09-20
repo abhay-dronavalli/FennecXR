@@ -5,7 +5,7 @@ export const useExperienceStore = create((set) => ({
   nearestArtifact: null,
   currentZone: 'byrsa',
   hasEntered: false,
-  interpretationVisible: false,
+  interpretationVisible: true,
   reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
   setActiveArtifact: (artifact) => set({ activeArtifact: artifact }),
   setNearestArtifact: (artifact) => set({ nearestArtifact: artifact }),

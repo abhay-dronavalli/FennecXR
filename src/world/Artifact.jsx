@@ -80,7 +80,6 @@ class ModelBoundary extends Component {
 
 export default function Artifact({ artifact }) {
   const setActiveArtifact = useExperienceStore((state) => state.setActiveArtifact)
-  const interpretationVisible = useExperienceStore((state) => state.interpretationVisible)
 
   const handleOpen = (event) => {
     event.stopPropagation()
@@ -103,12 +102,6 @@ export default function Artifact({ artifact }) {
           </Suspense>
         </ModelBoundary>
       ) : placeholder}
-      {interpretationVisible && artifact.id === 'corinthian-capital-byrsa' && (
-        <mesh position={[0, 2.8, 0]}>
-          <cylinderGeometry args={[0.6, 0.72, 5.2, 8]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.2} wireframe />
-        </mesh>
-      )}
     </group>
   )
 }

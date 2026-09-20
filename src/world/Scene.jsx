@@ -8,7 +8,7 @@ import Player from './Player.jsx'
 import Terrain from './Terrain.jsx'
 import Props from './Props.jsx'
 import Artifact from './Artifact.jsx'
-import ArchitectureStudies from './ArchitectureStudies.jsx'
+import HeritageStructures from './HeritageStructures.jsx'
 
 function World({ content }) {
   const setNearestArtifact = useExperienceStore((state) => state.setNearestArtifact)
@@ -66,11 +66,11 @@ function World({ content }) {
         mieDirectionalG={0.82}
       />
       <fog attach="fog" args={[palette.skyWarm, 68, 160]} />
-      <hemisphereLight args={[palette.skyHigh, palette.stoneDark, 1.35]} />
+      <hemisphereLight args={['#f4e6cf', palette.stoneDark, 1.55]} />
       <directionalLight
         castShadow
         color={palette.skyWarm}
-        intensity={2.4}
+        intensity={2.15}
         position={[-28, 18, 22]}
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-55}
@@ -80,7 +80,7 @@ function World({ content }) {
       />
       <Terrain />
       <Props />
-      <ArchitectureStudies studies={content.architectureStudies} />
+      <HeritageStructures />
       {content.artifacts.map((artifact) => <Artifact key={artifact.id} artifact={artifact} />)}
       <Player />
       <PointerLockControls selector="#enter-world" />

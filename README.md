@@ -24,11 +24,12 @@ GLBs have not been supplied remain visible as faceted stone proxies.
 ## What is real and what is not
 
 The textured objects are photogrammetry scans supplied through Tanit XR. The
-terrain, walls, columns, vegetation, plinths, artifact arrangement, Great Mosque
-of Kairouan silhouette, Dougga Capitol silhouette, and Antonine Baths diagram are
-modern low-poly abstractions. They are not measured reconstructions.
+terrain, walls, columns, vegetation, plinths, and artifact arrangement are
+modern low-poly abstractions. Fragments are set into deliberately simplified
+forum, villa, baths, and prayer-courtyard frames so their architectural role is
+legible. These frames are not measured reconstructions and can be hidden with `G`.
 
-Kairouan, Dougga, Tunis, and Zaghouan material appears in a separate study court
+Kairouan, Tunis, and Zaghouan material appears in a separate study court
 and is labeled with its real source place; it is not presented as having been
 found at Carthage. The in-world labels also identify architectural studies as
 interpretive.
@@ -52,7 +53,6 @@ Commons Attribution-NonCommercial-ShareAlike license.
 - [Corinthian Capital — Tanit XR](https://tanitxr.org/archive/corinthian-capital-byrsa-hill-carthage/)
 - [Archaeological Site of Carthage — UNESCO](https://whc.unesco.org/en/list/37)
 - [Kairouan — UNESCO](https://whc.unesco.org/en/list/499)
-- [Dougga / Thugga — UNESCO](https://whc.unesco.org/en/list/794)
 - [Antonine Baths — Tunisia heritage agency](https://www.patrimoinedetunisie.com.tn/en/monuments/the-antoninian-baths/overview/)
 
 ## Setup
