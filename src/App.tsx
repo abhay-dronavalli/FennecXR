@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildWorld, ModelRecord, PlacedModel, ZONES } from "./data";
-import { installMovementKeys, WorldCanvas } from "./scene";
+import { installMovementKeys, requestPointerLock, WorldCanvas } from "./scene";
 import {
   About,
   CollectionIndex,
@@ -41,7 +41,10 @@ export default function App() {
 
   const [nearUid, setNearUid] = useState<string | null>(null);
   const [examineUid, setExamineUid] = useState<string | null>(null);
-  const [locked, setLocked] = useState(false);
+  // "walkMode" is what the player asked for; "pointerLocked" is what the
+  // browser actually granted. They come apart, and Esc depends on both.
+  const [walkMode, setWalkMode] = useState(false);
+  const [pointerLocked, setPointerLocked] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showIndex, setShowIndex] = useState(false);
@@ -148,7 +151,12 @@ export default function App() {
         if (tourIndex !== null) return exitTour();
         if (screen === "grid") return setScreen("landing");
         if (screen === "world") {
-          setLocked(false);
+          // The browser releases Pointer Lock on Esc by itself. The first Esc
+          // just gives the mouse back; a second one leaves the world.
+          if (pointerLocked || walkMode) {
+            setWalkMode(false);
+            return;
+          }
           return setScreen("landing");
         }
         return;
@@ -188,6 +196,8 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [
     screen,
+    pointerLocked,
+    walkMode,
     nearUid,
     examineUid,
     showMap,
@@ -237,8 +247,9 @@ export default function App() {
           artifacts={models}
           nearUid={nearUid}
           onNear={setNearUid}
-          locked={locked && !overlayOpen}
-          onLockChange={setLocked}
+          wantLock={walkMode && !overlayOpen}
+          walkable={!overlayOpen}
+          onLockChange={setPointerLocked}
           reduceMotion={reduceMotion}
           tourTarget={tourTarget}
           onTourArrive={onTourArrive}
@@ -247,7 +258,14 @@ export default function App() {
       )}
 
       {screen === "world" && tourIndex === null && !overlayOpen && (
-        <Hud near={near} locked={locked} onResume={() => setLocked(true)} />
+        <Hud
+          near={near}
+          locked={pointerLocked}
+          onResume={() => {
+            setWalkMode(true);
+            requestPointerLock();
+          }}
+        />
       )}
 
       {screen === "landing" && (
@@ -258,11 +276,11 @@ export default function App() {
           onReduceMotion={setReduceMotion}
           onEnter={() => {
             setScreen("world");
-            setLocked(true);
+            setWalkMode(true);
           }}
           onTour={() => {
             setScreen("world");
-            setLocked(false);
+            setWalkMode(false);
             goTour(0);
           }}
           onGrid={() => setScreen("grid")}

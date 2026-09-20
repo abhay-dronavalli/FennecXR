@@ -61,12 +61,20 @@ export function Landing({
 
         <dl className="legend">
           <div>
-            <dt>WASD / arrows</dt>
-            <dd>move</dd>
+            <dt>W A S D</dt>
+            <dd>move and strafe</dd>
           </div>
           <div>
             <dt>Mouse</dt>
             <dd>look</dd>
+          </div>
+          <div>
+            <dt>&uarr; &darr;</dt>
+            <dd>walk, no mouse needed</dd>
+          </div>
+          <div>
+            <dt>&larr; &rarr;</dt>
+            <dd>turn, no mouse needed</dd>
           </div>
           <div>
             <dt>Shift</dt>
@@ -94,8 +102,8 @@ export function Landing({
           <p>
             <strong>Motion notice.</strong> Entering the map uses first-person
             camera movement, which can cause discomfort for people sensitive to
-            motion. The guided tour and the 2D collection avoid mouse-look
-            entirely.
+            motion. The arrow keys walk and turn without the mouse, and the
+            guided tour and the 2D collection avoid camera control entirely.
           </p>
           <label className="toggle">
             <input
@@ -133,6 +141,7 @@ export function About({
   const geomTwins = models.filter((m) => m.geomTwin).length;
   const nameShared = models.filter((m) => m.nameSiblings.length > 0).length;
   const truncated = models.filter((m) => /…$/.test(m.name)).length;
+  const kairouan = models.filter((m) => m.zone === "kairouan").length;
 
   return (
     <Overlay onClose={onClose} label="About this project">
@@ -227,8 +236,8 @@ export function About({
         kilometre projection; Carthage and the Medina of Tunis are only about
         14&nbsp;km apart in reality and were pushed apart along their real
         bearing so you can walk between them. Kairouan is included because
-        three scans document it, even though it lies outside the northeast
-        region this map otherwise covers.
+        {" "}{kairouan} scans document it, even though it lies outside the
+        northeast region this map otherwise covers.
       </p>
 
       <h3>How this continues after Hack Day</h3>
@@ -726,12 +735,15 @@ export function Hud({
       </div>
       {!locked && (
         <button className="resume" onClick={onResume}>
-          Click to look around
-          <small>Esc releases the mouse at any time</small>
+          Click for mouse look
+          <small>
+            Or walk with the arrow keys. Esc releases the mouse at any time.
+          </small>
         </button>
       )}
       <div className="hud-keys" aria-hidden="true">
-        WASD move &middot; E examine &middot; M map &middot; Tab index &middot; Esc exit
+        WASD or arrows move &middot; E examine &middot; M map &middot; Tab index
+        &middot; Esc exit
       </div>
     </>
   );

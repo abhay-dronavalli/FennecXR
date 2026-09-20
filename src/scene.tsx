@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
+  Billboard,
   OrbitControls,
   PointerLockControls,
   Sky,
@@ -21,19 +22,13 @@ import {
 /* ------------------------------------------------------------------ keys */
 
 const keys: Record<string, boolean> = {};
-const CODE_ALIASES: Record<string, string> = {
-  ArrowUp: "KeyW",
-  ArrowDown: "KeyS",
-  ArrowLeft: "KeyA",
-  ArrowRight: "KeyD",
-};
 
 export function installMovementKeys() {
   const down = (e: KeyboardEvent) => {
-    keys[CODE_ALIASES[e.code] ?? e.code] = true;
+    keys[e.code] = true;
   };
   const up = (e: KeyboardEvent) => {
-    keys[CODE_ALIASES[e.code] ?? e.code] = false;
+    keys[e.code] = false;
   };
   const blur = () => {
     for (const k of Object.keys(keys)) keys[k] = false;
@@ -84,6 +79,12 @@ export interface LiveState {
 export const live: LiveState = { x: SPAWN[0], z: SPAWN[2], yaw: 0, nearUid: null };
 
 export const NEAR_RANGE = 6;
+
+/**
+ * Set by WorldCanvas so a DOM button can request the lock from inside a real
+ * user gesture. Browsers refuse Pointer Lock requested any other way.
+ */
+export let requestPointerLock: () => void = () => {};
 
 /* ---------------------------------------------------------------- player */
 
@@ -149,10 +150,24 @@ function Player({
       }
     } else if (active) {
       const base = reduceMotion ? 6 : 9;
-      const speed = keys.ShiftLeft || keys.ShiftRight ? base * 2 : base;
+      const fast = keys.ShiftLeft || keys.ShiftRight;
+      const speed = fast ? base * 2 : base;
 
-      const fwd = Number(!!keys.KeyW) - Number(!!keys.KeyS);
+      // W/S and Up/Down walk. A/D strafe. Left/Right turn, so the whole world
+      // is navigable from the keyboard alone, without Pointer Lock.
+      const fwd =
+        Number(!!keys.KeyW || !!keys.ArrowUp) -
+        Number(!!keys.KeyS || !!keys.ArrowDown);
       const str = Number(!!keys.KeyD) - Number(!!keys.KeyA);
+      const turn = Number(!!keys.ArrowLeft) - Number(!!keys.ArrowRight);
+
+      if (turn !== 0) {
+        const rate = (reduceMotion ? 1.1 : 1.8) * (fast ? 1.6 : 1);
+        camera.rotateOnWorldAxis(
+          new THREE.Vector3(0, 1, 0),
+          turn * rate * dt
+        );
+      }
 
       const dir = new THREE.Vector3();
       camera.getWorldDirection(dir);
@@ -288,30 +303,33 @@ function ZoneBuild({ zone }: { zone: Zone }) {
           />
         ))}
 
-      <Text
-        position={[cx, 12, cz]}
-        fontSize={4.2}
-        color="#2d2419"
-        outlineWidth={0.12}
-        outlineColor="#f3ead9"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={40}
-      >
-        {zone.label}
-      </Text>
-      <Text
-        position={[cx, 8.6, cz]}
-        fontSize={1.5}
-        color="#4a3d2b"
-        outlineWidth={0.05}
-        outlineColor="#f3ead9"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={44}
-      >
-        {zone.sublabel}
-      </Text>
+      {/* Billboarded, so the label never reads mirrored from behind. */}
+      <Billboard position={[cx, 12, cz]}>
+        <Text
+          fontSize={4.2}
+          color="#2d2419"
+          outlineWidth={0.12}
+          outlineColor="#f3ead9"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={40}
+        >
+          {zone.label}
+        </Text>
+      </Billboard>
+      <Billboard position={[cx, 8.6, cz]}>
+        <Text
+          fontSize={1.5}
+          color="#4a3d2b"
+          outlineWidth={0.05}
+          outlineColor="#f3ead9"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={44}
+        >
+          {zone.sublabel}
+        </Text>
+      </Billboard>
     </group>
   );
 }
@@ -366,29 +384,31 @@ function Signpost() {
         );
       })}
 
-      <Text
-        position={[0, 7.2, 0]}
-        fontSize={1.1}
-        color="#2d2419"
-        outlineWidth={0.04}
-        outlineColor="#f3ead9"
-        anchorX="center"
-        anchorY="middle"
-      >
-        IFRIQIYA
-      </Text>
-      <Text
-        position={[0, 6.3, 0]}
-        fontSize={0.42}
-        color="#4a3d2b"
-        outlineWidth={0.02}
-        outlineColor="#f3ead9"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={16}
-      >
-        Bearings are real. Distances are compressed for walking.
-      </Text>
+      <Billboard position={[0, 7.2, 0]}>
+        <Text
+          fontSize={1.1}
+          color="#2d2419"
+          outlineWidth={0.04}
+          outlineColor="#f3ead9"
+          anchorX="center"
+          anchorY="middle"
+        >
+          IFRIQIYA
+        </Text>
+      </Billboard>
+      <Billboard position={[0, 6.3, 0]}>
+        <Text
+          fontSize={0.42}
+          color="#4a3d2b"
+          outlineWidth={0.02}
+          outlineColor="#f3ead9"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={16}
+        >
+          Bearings are real. Distances are compressed for walking.
+        </Text>
+      </Billboard>
     </group>
   );
 }
@@ -586,7 +606,8 @@ export function WorldCanvas({
   artifacts,
   nearUid,
   onNear,
-  locked,
+  wantLock,
+  walkable,
   onLockChange,
   reduceMotion,
   tourTarget,
@@ -596,7 +617,10 @@ export function WorldCanvas({
   artifacts: PlacedModel[];
   nearUid: string | null;
   onNear: (uid: string | null) => void;
-  locked: boolean;
+  /** The player wants to be walking. */
+  wantLock: boolean;
+  /** Movement is allowed, with or without the mouse. */
+  walkable: boolean;
   onLockChange: (v: boolean) => void;
   reduceMotion: boolean;
   tourTarget: PlacedModel | null;
@@ -606,13 +630,22 @@ export function WorldCanvas({
   const controls = useRef<any>(null);
 
   useEffect(() => {
-    if (!controls.current) return;
-    if (locked && !tourTarget) {
+    requestPointerLock = () => {
       try {
-        controls.current.lock();
+        controls.current?.lock();
       } catch {
-        /* browser refused the lock; the user can click the canvas */
+        /* the browser may still refuse; the resume button stays visible */
       }
+    };
+    return () => {
+      requestPointerLock = () => {};
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!controls.current) return;
+    if (wantLock && !tourTarget) {
+      requestPointerLock();
     } else {
       try {
         controls.current.unlock();
@@ -620,7 +653,7 @@ export function WorldCanvas({
         /* nothing to unlock */
       }
     }
-  }, [locked, tourTarget]);
+  }, [wantLock, tourTarget]);
 
   return (
     <Canvas
@@ -661,7 +694,7 @@ export function WorldCanvas({
 
       <Player
         artifacts={artifacts}
-        active={locked && !paused && !tourTarget}
+        active={walkable && !paused && !tourTarget}
         reduceMotion={reduceMotion}
         onNear={onNear}
         tourTarget={tourTarget}
