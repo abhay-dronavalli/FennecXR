@@ -4,22 +4,19 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useExperienceStore } from '../store.js'
 
-// ── Single 3D preview (one Canvas, one model at a time) ────────────────────
+// ── Single 3D preview ──────────────────────────────────────────────────────
 
 function RotatingModel({ url, fit = 1.8 }) {
   const { scene } = useGLTF(url)
   const clone = useMemo(() => scene.clone(true), [scene])
   const ref = useRef()
-
   const norm = useMemo(() => {
     const box = new THREE.Box3().setFromObject(clone)
     const size = box.getSize(new THREE.Vector3())
     const center = box.getCenter(new THREE.Vector3())
     return { center, scale: fit / (Math.max(size.x, size.y, size.z) || 1) }
   }, [clone, fit])
-
   useFrame((_, dt) => { if (ref.current) ref.current.rotation.y += dt * 0.4 })
-
   return (
     <group ref={ref} scale={norm.scale}>
       <primitive object={clone} position={norm.center.clone().multiplyScalar(-1)} />
@@ -30,7 +27,6 @@ function RotatingModel({ url, fit = 1.8 }) {
 function RotatingPlaceholder({ type }) {
   const ref = useRef()
   useFrame((_, dt) => { if (ref.current) ref.current.rotation.y += dt * 0.4 })
-
   let geo
   if (type === 'column')                         geo = <cylinderGeometry args={[0.5, 0.6, 2, 8]} />
   else if (type === 'base' || type === 'capital') geo = <cylinderGeometry args={[0.7, 0.6, 0.7, 8]} />
@@ -40,7 +36,6 @@ function RotatingPlaceholder({ type }) {
   else if (type === 'mosaic')                     geo = <boxGeometry args={[1.8, 1.8, 0.1]} />
   else if (type === 'bird')                       geo = <octahedronGeometry args={[0.6, 0]} />
   else                                            geo = <icosahedronGeometry args={[0.65, 0]} />
-
   return (
     <mesh ref={ref}>
       {geo}
@@ -68,7 +63,7 @@ function PreviewCanvas({ artifact }) {
   )
 }
 
-// ── Zone gradients + type icons for the card thumbnails ─────────────────────
+// ── Card visuals ────────────────────────────────────────────────────────────
 
 const ZONE_GRAD = {
   byrsa:             'linear-gradient(145deg, #3a506b 0%, #5b8c9b 100%)',
@@ -77,13 +72,10 @@ const ZONE_GRAD = {
   baths:             'linear-gradient(145deg, #6b4c3b 0%, #a89377 100%)',
   'tunisia-details': 'linear-gradient(145deg, #2d4a34 0%, #3f5f4a 100%)',
 }
-
 const TYPE_ICON = {
   capital: '⬡', column: '▏', base: '▬', statue: '♟', bust: '◉',
   stela: '▯', 'stela-row': '▯▯', mosaic: '◫', bird: '🕊', fragment: '◇',
 }
-
-// ── Magazine card (lightweight — no WebGL) ──────────────────────────────────
 
 function MagCard({ artifact, isActive, onHover, onTeleport }) {
   const bg = ZONE_GRAD[artifact.zone] ?? ZONE_GRAD.byrsa
@@ -109,6 +101,21 @@ function MagCard({ artifact, isActive, onHover, onTeleport }) {
   )
 }
 
+// ── Gemini recommendation helper ────────────────────────────────────────────
+
+async function getRecommendations(query) {
+  const res = await fetch('http://localhost:3001/api/recommend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error ?? `Server error ${res.status}`)
+  }
+  return res.json() // { message, ids }
+}
+
 // ── Main Pamphlet ───────────────────────────────────────────────────────────
 
 export default function Pamphlet({ content, archiveDb }) {
@@ -117,13 +124,49 @@ export default function Pamphlet({ content, archiveDb }) {
   const setTeleportTarget = useExperienceStore((s) => s.setTeleportTarget)
   const hasEntered        = useExperienceStore((s) => s.hasEntered)
 
-  const artifacts = content.artifacts.map((world) => {
+  const allArtifacts = content.artifacts.map((world) => {
     const db = archiveDb.find((a) => a.id === world.id)
     return { ...world, period: db?.period ?? null, material: db?.material ?? null }
   })
 
-  const [previewed, setPreviewed] = useState(null)
-  const active = previewed ?? artifacts[0]
+  const [previewed, setPreviewed]   = useState(null)
+  const [query, setQuery]           = useState('')
+  const [aiMessage, setAiMessage]   = useState('')
+  const [filteredIds, setFilteredIds] = useState(null) // null = show all
+  const [loading, setLoading]       = useState(false)
+  const [error, setError]           = useState('')
+
+  const displayed = filteredIds
+    ? allArtifacts.filter((a) => filteredIds.includes(a.id))
+    : allArtifacts
+
+  const active = previewed ?? displayed[0]
+
+  const handleAsk = async (e) => {
+    e.preventDefault()
+    if (!query.trim()) return
+    setLoading(true)
+    setError('')
+    setAiMessage('')
+    setFilteredIds(null)
+    try {
+      const { message, ids } = await getRecommendations(query.trim())
+      setAiMessage(message)
+      setFilteredIds(ids.length > 0 ? ids : null)
+      setPreviewed(null)
+    } catch (err) {
+      setError(err.message)
+    }
+    setLoading(false)
+  }
+
+  const handleClear = () => {
+    setFilteredIds(null)
+    setAiMessage('')
+    setQuery('')
+    setError('')
+    setPreviewed(null)
+  }
 
   const handleTeleport = (artifact) => {
     if (!artifact.position) return
@@ -153,11 +196,11 @@ export default function Pamphlet({ content, archiveDb }) {
         <div className="pamphlet__tab">
           <button className="pamphlet__close" onClick={() => setPamphletOpen(false)}>↓ close</button>
           <span className="pamphlet__tab-title">Collection Guide</span>
-          <span className="pamphlet__tab-count">{artifacts.length} artifacts</span>
+          <span className="pamphlet__tab-count">{displayed.length} artifacts</span>
         </div>
 
         <div className="pamphlet__body">
-          {/* Single 3D preview — only mounted while pamphlet is open */}
+          {/* Left: 3D preview */}
           <div className="pamphlet__preview">
             {pamphletOpen && active && <PreviewCanvas artifact={active} />}
             <div className="pamphlet__preview-info">
@@ -170,10 +213,32 @@ export default function Pamphlet({ content, archiveDb }) {
             </div>
           </div>
 
-          {/* Scrollable artifact grid */}
+          {/* Right: search + grid */}
           <div className="pamphlet__grid-wrap">
+            <form className="pamphlet__ask" onSubmit={handleAsk}>
+              <input
+                className="pamphlet__ask-input"
+                type="text"
+                placeholder="What interests you? e.g. Roman mosaics, Punic history, architecture…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                tabIndex={pamphletOpen ? 0 : -1}
+              />
+              <button className="pamphlet__ask-btn" type="submit" disabled={loading} tabIndex={pamphletOpen ? 0 : -1}>
+                {loading ? '…' : 'Find'}
+              </button>
+              {filteredIds && (
+                <button className="pamphlet__ask-clear" type="button" onClick={handleClear} tabIndex={pamphletOpen ? 0 : -1}>
+                  Show all
+                </button>
+              )}
+            </form>
+
+            {aiMessage && <div className="pamphlet__ai-msg">{aiMessage}</div>}
+            {error && <div className="pamphlet__ai-error">{error}</div>}
+
             <div className="pamphlet__grid">
-              {artifacts.map((a) => (
+              {displayed.map((a) => (
                 <MagCard
                   key={a.id}
                   artifact={a}
@@ -182,6 +247,9 @@ export default function Pamphlet({ content, archiveDb }) {
                   onTeleport={handleTeleport}
                 />
               ))}
+              {displayed.length === 0 && (
+                <p className="pamphlet__empty">No matching artifacts found. Try a different query.</p>
+              )}
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import LoadingStatus from './ui/LoadingStatus.jsx'
 import MusicPlayer from './ui/MusicPlayer.jsx'
 import TimeOfDayControl from './ui/TimeOfDayControl.jsx'
 import Pamphlet from './ui/Pamphlet.jsx'
+import ArtifactViewer from './ui/ArtifactViewer.jsx'
 import { useExperienceStore } from './store.js'
 
 const controls = [
@@ -54,6 +55,7 @@ function Experience({ content, archiveDb }) {
   const pamphletOpen    = useExperienceStore((state) => state.pamphletOpen)
   const setPamphletOpen = useExperienceStore((state) => state.setPamphletOpen)
   const [pointerLocked, setPointerLocked] = useState(document.pointerLockElement != null)
+  const [viewerArtifact, setViewerArtifact] = useState(null)
 
   const resumeWorld = useCallback(() => {
     document.querySelector('.experience-shell canvas')?.requestPointerLock?.()
@@ -73,6 +75,7 @@ function Experience({ content, archiveDb }) {
   useEffect(() => {
     const handleKey = (event) => {
       if (event.code === 'Escape') {
+        if (viewerArtifact) { setViewerArtifact(null); return }
         if (pamphletOpen) { setPamphletOpen(false); return }
         if (activeArtifact) closeArtifact()
       }
@@ -94,13 +97,15 @@ function Experience({ content, archiveDb }) {
         <span className="site-mark__title">Carthage Underfoot</span>
         <span className="site-mark__place">{zone.name}</span>
       </header>
-      <TimeOfDayControl />
-      <SceneBoundary>
-        <KeyboardControls map={controls}>
-          <Scene content={content} />
-        </KeyboardControls>
-      </SceneBoundary>
-      <LoadingStatus />
+      {!viewerArtifact && <TimeOfDayControl />}
+      {!viewerArtifact && (
+        <SceneBoundary>
+          <KeyboardControls map={controls}>
+            <Scene content={content} />
+          </KeyboardControls>
+        </SceneBoundary>
+      )}
+      {!viewerArtifact && <LoadingStatus />}
       {hasEntered && <div className="crosshair" aria-hidden="true" />}
       {hasEntered && !activeArtifact && !pointerLocked && (
         <button className="resume-prompt" onClick={resumeWorld}>
@@ -117,7 +122,20 @@ function Experience({ content, archiveDb }) {
       <MusicPlayer />
       <Pamphlet content={content} archiveDb={archiveDb} />
       <Onboarding />
-      {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={closeArtifact} />}
+      {activeArtifact && !viewerArtifact && (
+        <InfoPanel
+          artifact={activeArtifact}
+          archiveEntry={archiveDb.find((a) => a.id === activeArtifact.id)}
+          onClose={closeArtifact}
+          onView3D={() => setViewerArtifact(activeArtifact)}
+        />
+      )}
+      {viewerArtifact && (
+        <ArtifactViewer
+          artifact={viewerArtifact}
+          onClose={() => setViewerArtifact(null)}
+        />
+      )}
       <HelpBar />
     </div>
   )
