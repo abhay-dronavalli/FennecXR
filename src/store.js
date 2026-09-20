@@ -27,4 +27,6 @@ export const useExperienceStore = create((set) => ({
   setSavedCameraPos: (pos) => set({ savedCameraPos: pos }),
   hudHidden: false,
   toggleHud: () => set((state) => ({ hudHidden: !state.hudHidden })),
+  ttsSpeaking: false,
+  setTtsSpeaking: (v) => set({ ttsSpeaking: v }),
 }))

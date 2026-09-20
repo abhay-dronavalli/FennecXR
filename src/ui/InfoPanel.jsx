@@ -1,17 +1,71 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useExperienceStore } from '../store.js'
+
+function buildNarration(artifact, archiveEntry) {
+  const parts = []
+  parts.push(artifact.title + '.')
+  if (artifact.findSite) parts.push('Found at ' + artifact.findSite + '.')
+  const desc = archiveEntry?.description ?? artifact.description
+  if (desc) parts.push(desc)
+  if (archiveEntry?.period) parts.push('Period: ' + archiveEntry.period + '.')
+  if (archiveEntry?.material) parts.push('Material: ' + archiveEntry.material + '.')
+  if (archiveEntry?.what) parts.push(archiveEntry.what + '.')
+  if (archiveEntry?.significance) parts.push(archiveEntry.significance + '.')
+  if (artifact.context) parts.push('Why it is here: ' + artifact.context)
+  if (artifact.interpretation) parts.push(artifact.interpretation)
+  return parts.join(' ')
+}
 
 export default function InfoPanel({ artifact, archiveEntry, onClose, onView3D }) {
   const closeButton = useRef(null)
+  const [speaking, setSpeaking] = useState(false)
+  const setTtsSpeaking = useExperienceStore((s) => s.setTtsSpeaking)
 
   useEffect(() => {
     if (document.pointerLockElement) document.exitPointerLock()
     closeButton.current?.focus()
   }, [])
 
+  // Stop speech when panel closes
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis?.cancel()
+      setTtsSpeaking(false)
+    }
+  }, [setTtsSpeaking])
+
+  const toggleSpeech = useCallback(() => {
+    const synth = window.speechSynthesis
+    if (!synth) return
+
+    if (synth.speaking) {
+      synth.cancel()
+      setSpeaking(false)
+      setTtsSpeaking(false)
+      return
+    }
+
+    const text = buildNarration(artifact, archiveEntry)
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 0.95
+    utterance.pitch = 1
+    utterance.onend = () => { setSpeaking(false); setTtsSpeaking(false) }
+    utterance.onerror = () => { setSpeaking(false); setTtsSpeaking(false) }
+    setSpeaking(true)
+    setTtsSpeaking(true)
+    synth.speak(utterance)
+  }, [artifact, archiveEntry, setTtsSpeaking])
+
   return (
     <aside className="info-panel" role="dialog" aria-modal="true" aria-labelledby="artifact-title">
       <div className="info-panel__rail" aria-hidden="true" />
-      <button ref={closeButton} className="close-button" onClick={onClose} aria-label="Close artifact record">×</button>
+      <div className="info-panel__top-bar">
+        <button className="narrate-btn" onClick={toggleSpeech} aria-label={speaking ? 'Stop narration' : 'Listen to description'}>
+          {speaking ? '◼' : '🔊'}
+          <span>{speaking ? 'Stop' : 'Listen'}</span>
+        </button>
+        <button ref={closeButton} className="close-button" onClick={onClose} aria-label="Close artifact record">×</button>
+      </div>
 
       <p className="kicker">{artifact.findSite}</p>
       <h2 id="artifact-title">{artifact.title}</h2>

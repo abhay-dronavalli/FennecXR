@@ -16,6 +16,20 @@ export default function MusicPlayer() {
   const audioRef    = useRef()
   const flashTimer  = useRef()
   const hasEntered  = useExperienceStore((s) => s.hasEntered)
+  const ttsSpeaking = useExperienceStore((s) => s.ttsSpeaking)
+
+  // Duck music volume while TTS is speaking
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.volume = ttsSpeaking ? 0 : 0.35
+  }, [ttsSpeaking])
+
+  // Set softer base volume on mount
+  useEffect(() => {
+    const audio = audioRef.current
+    if (audio) audio.volume = 0.35
+  }, [])
 
   const flashRibbon = () => {
     setIsOpen(true)
