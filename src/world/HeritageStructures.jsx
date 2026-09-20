@@ -101,7 +101,7 @@ function Minaret({ position }) {
   )
 }
 
-function Lantern({ position }) {
+function Lantern({ position, intensity }) {
   return (
     <group position={position}>
       <mesh>
@@ -113,12 +113,12 @@ function Lantern({ position }) {
           roughness={0.5}
         />
       </mesh>
-      <pointLight color="#ffbd72" intensity={14} distance={7} decay={2} />
+      <pointLight color="#ffbd72" intensity={intensity} distance={7} decay={2} />
     </group>
   )
 }
 
-function PrayerHallRoof() {
+function PrayerHallRoof({ lanternIntensity }) {
   const roofCourses = [-29.75, -29.2, -27.7, -27.15]
   return (
     <group>
@@ -152,7 +152,7 @@ function PrayerHallRoof() {
         <sphereGeometry args={[0.11, 8, 4]} />
         <meshStandardMaterial color={palette.tileBlue} roughness={0.8} />
       </mesh>
-      {[-6, 0, 6].map((x) => <Lantern key={x} position={[x, 2.7, -28.05]} />)}
+      {[-6, 0, 6].map((x) => <Lantern key={x} position={[x, 2.7, -28.05]} intensity={lanternIntensity} />)}
     </group>
   )
 }
@@ -238,7 +238,7 @@ function BathsFrame() {
   )
 }
 
-function TunisiaPrayerCourt() {
+function TunisiaPrayerCourt({ lanternIntensity }) {
   const porticoXs = [-8, -5.3, -2.7, 2.7, 5.3, 8]
   return (
     <group>
@@ -246,15 +246,13 @@ function TunisiaPrayerCourt() {
       <Stone position={[0, 0.07, -25]} scale={[22, 0.05, 8.2]} color={palette.sand} />
       <FloorInlay position={[0, 0.11, -24.55]} width={20.5} depth={7.4} />
 
-      <Stone position={[-7.2, 1.55, -29.25]} scale={[8.6, 3.1, 0.46]} />
-      <Stone position={[7.2, 1.55, -29.25]} scale={[8.6, 3.1, 0.46]} />
-      <Stone position={[-2.25, 3.05, -29.25]} scale={[1.5, 0.34, 0.46]} color={palette.stoneDark} />
-      <Stone position={[2.25, 3.05, -29.25]} scale={[1.5, 0.34, 0.46]} color={palette.stoneDark} />
+      <Stone position={[0, 1.55, -29.25]} scale={[24, 3.1, 0.46]} />
+      <Stone position={[0, 1.48, -28.99]} scale={[3.05, 2.96, 0.08]} color={palette.tileWhite} />
       <Stone position={[0, 4.05, -29.25]} scale={[24, 0.34, 0.75]} color={palette.stoneDark} />
       <Stone position={[0, 3.75, -30.1]} scale={[24, 0.24, 2.2]} color={palette.stoneDark} />
       <Stone position={[5.8, 2.25, -29.02]} scale={[2.5, 1.65, 0.16]} color={palette.stoneDark} />
       <Stone position={[5.8, 3.17, -29]} scale={[3.1, 0.18, 0.22]} color={palette.stoneDark} />
-      <PrayerHallRoof />
+      <PrayerHallRoof lanternIntensity={lanternIntensity} />
       <Minaret position={[9.4, 0, -29.1]} />
 
       <Stone position={[-11.25, 1.5, -21.7]} scale={[0.46, 3, 5]} />
@@ -280,9 +278,11 @@ function TunisiaPrayerCourt() {
       <Stone position={[5.8, 1.7, -19.89]} scale={[9.8, 0.08, 0.09]} color={palette.stone} />
 
       {porticoXs.map((x) => <Column key={x} position={[x, 0.08, -27.25]} height={2.5} radius={0.15} />)}
-      <Stone position={[0, 2.75, -27.25]} scale={[19, 0.3, 0.55]} color={palette.stoneDark} />
+      <Stone position={[0, 2.75, -27.25]} scale={[19, 0.3, 0.55]} color={palette.stone} />
       <Stone position={[0, 3.03, -27.8]} scale={[20.5, 0.22, 1.7]} color={palette.tileWhite} />
-      {[-6, 0, 6].map((x) => <Lantern key={`portico-${x}`} position={[x, 2.55, -27.15]} />)}
+      {[-6, 0, 6].map((x) => (
+        <Lantern key={`portico-${x}`} position={[x, 2.55, -27.15]} intensity={lanternIntensity} />
+      ))}
 
       <mesh receiveShadow position={[5, 0.13, -24.5]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[1.1, 1.45, 12]} />
@@ -297,15 +297,15 @@ function TunisiaPrayerCourt() {
 }
 
 export default function HeritageStructures() {
-  const visible = useExperienceStore((state) => state.interpretationVisible)
-  if (!visible) return null
+  const timeOfDay = useExperienceStore((state) => state.timeOfDay)
+  const lanternIntensity = timeOfDay === 'night' ? 24 : timeOfDay === 'day' ? 6 : 14
 
   return (
     <group>
       <ByrsaForumFrame />
       <VillaFrame />
       <BathsFrame />
-      <TunisiaPrayerCourt />
+      <TunisiaPrayerCourt lanternIntensity={lanternIntensity} />
     </group>
   )
 }

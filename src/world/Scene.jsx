@@ -1,6 +1,6 @@
 import { AdaptiveDpr, PointerLockControls } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Suspense, useMemo } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { palette } from '../palette.js'
 import { useExperienceStore } from '../store.js'
@@ -10,7 +10,35 @@ import Props from './Props.jsx'
 import Artifact from './Artifact.jsx'
 import HeritageStructures from './HeritageStructures.jsx'
 
-function EveningSky() {
+const timePresets = {
+  dawn: {
+    background: '#cc7355', horizon: '#f3a36c', zenith: '#52627d', fog: '#c98263',
+    hemisphere: '#edb38b', ground: '#514550', ambient: 1.55,
+    sun: '#ffd2ad', sunIntensity: 1.9, sunPosition: [-38, 8, 28], exposure: 0.88,
+  },
+  day: {
+    background: '#76a9c4', horizon: '#eacb98', zenith: '#5794bd', fog: '#d7c19d',
+    hemisphere: '#e5ece7', ground: '#8f826f', ambient: 1.65,
+    sun: '#fff1cf', sunIntensity: 2.5, sunPosition: [-28, 19, 22], exposure: 0.84,
+  },
+  dusk: {
+    background: '#d47b4d', horizon: '#f06029', zenith: '#472140', fog: '#d98b5b',
+    hemisphere: '#e7a06a', ground: '#584350', ambient: 1.7,
+    sun: '#ffd09a', sunIntensity: 2.35, sunPosition: [-42, 10, 32], exposure: 0.9,
+  },
+  night: {
+    background: '#10182c', horizon: '#34445b', zenith: '#090f21', fog: '#273342',
+    hemisphere: '#52627b', ground: '#171722', ambient: 0.85,
+    sun: '#9eabd0', sunIntensity: 0.55, sunPosition: [24, 18, -30], exposure: 0.78,
+  },
+}
+
+function GradientSky({ horizon, zenith }) {
+  const uniforms = useMemo(() => ({
+    horizonColor: { value: new THREE.Color(horizon) },
+    zenithColor: { value: new THREE.Color(zenith) },
+  }), [horizon, zenith])
+
   return (
     <mesh scale={180} frustumCulled={false}>
       <sphereGeometry args={[1, 32, 16]} />
@@ -18,6 +46,7 @@ function EveningSky() {
         side={THREE.BackSide}
         depthWrite={false}
         toneMapped={false}
+        uniforms={uniforms}
         vertexShader={`
           varying vec3 vDirection;
           void main() {
@@ -27,16 +56,13 @@ function EveningSky() {
         `}
         fragmentShader={`
           varying vec3 vDirection;
+          uniform vec3 horizonColor;
+          uniform vec3 zenithColor;
           void main() {
             vec3 direction = normalize(vDirection);
             float height = smoothstep(-0.08, 0.9, direction.y);
-            vec3 horizon = vec3(0.94, 0.38, 0.16);
-            vec3 zenith = vec3(0.28, 0.13, 0.25);
-            vec3 dusk = mix(horizon, zenith, height);
-            vec3 sunDirection = normalize(vec3(-0.78, 0.08, 0.52));
-            float glow = pow(max(dot(direction, sunDirection), 0.0), 24.0);
-            dusk += vec3(1.0, 0.28, 0.06) * glow * 0.75;
-            gl_FragColor = vec4(dusk, 1.0);
+            vec3 sky = mix(horizonColor, zenithColor, height);
+            gl_FragColor = vec4(sky, 1.0);
           }
         `}
       />
@@ -47,13 +73,19 @@ function EveningSky() {
 function World({ content }) {
   const setNearestArtifact = useExperienceStore((state) => state.setNearestArtifact)
   const setCurrentZone = useExperienceStore((state) => state.setCurrentZone)
-  const { camera } = useThree()
+  const timeOfDay = useExperienceStore((state) => state.timeOfDay)
+  const preset = timePresets[timeOfDay] ?? timePresets.dusk
+  const { camera, gl } = useThree()
   const artifactPositions = useMemo(
     () => content.artifacts.map((artifact) => ({ artifact, vector: new THREE.Vector3(...artifact.position) })),
     [content.artifacts],
   )
   let lastNearestId = null
   let lastZoneId = 'byrsa'
+
+  useEffect(() => {
+    gl.toneMappingExposure = preset.exposure
+  }, [gl, preset.exposure])
 
   useFrame(() => {
     let nearest = null
@@ -90,15 +122,15 @@ function World({ content }) {
 
   return (
     <>
-      <color attach="background" args={['#d47b4d']} />
-      <EveningSky />
-      <fog attach="fog" args={['#d98b5b', 66, 150]} />
-      <hemisphereLight args={['#e7a06a', '#584350', 1.7]} />
+      <color attach="background" args={[preset.background]} />
+      <GradientSky horizon={preset.horizon} zenith={preset.zenith} />
+      <fog attach="fog" args={[preset.fog, 66, 150]} />
+      <hemisphereLight args={[preset.hemisphere, preset.ground, preset.ambient]} />
       <directionalLight
         castShadow
-        color="#ffd09a"
-        intensity={2.35}
-        position={[-42, 10, 32]}
+        color={preset.sun}
+        intensity={preset.sunIntensity}
+        position={preset.sunPosition}
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-55}
         shadow-camera-right={55}

@@ -5,6 +5,7 @@ import Onboarding from './ui/Onboarding.jsx'
 import InfoPanel from './ui/InfoPanel.jsx'
 import HelpBar from './ui/HelpBar.jsx'
 import LoadingStatus from './ui/LoadingStatus.jsx'
+import TimeOfDayControl from './ui/TimeOfDayControl.jsx'
 import { useExperienceStore } from './store.js'
 
 const controls = [
@@ -47,8 +48,6 @@ function Experience({ content }) {
   const nearestArtifact = useExperienceStore((state) => state.nearestArtifact)
   const hasEntered = useExperienceStore((state) => state.hasEntered)
   const currentZone = useExperienceStore((state) => state.currentZone)
-  const interpretationVisible = useExperienceStore((state) => state.interpretationVisible)
-  const toggleInterpretation = useExperienceStore((state) => state.toggleInterpretation)
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -56,11 +55,10 @@ function Experience({ content }) {
       if (event.code === 'KeyE' && nearestArtifact && !activeArtifact) {
         setActiveArtifact(nearestArtifact)
       }
-      if (event.code === 'KeyG' && !event.repeat) toggleInterpretation()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeArtifact, nearestArtifact, setActiveArtifact, toggleInterpretation])
+  }, [activeArtifact, nearestArtifact, setActiveArtifact])
 
   const zone = content.zones.find((item) => item.id === currentZone) ?? content.zones[0]
 
@@ -70,11 +68,10 @@ function Experience({ content }) {
         <span className="site-mark__title">Carthage Underfoot</span>
         <span className="site-mark__place">{zone.name}</span>
       </header>
-      {interpretationVisible && (
-        <div className="interpretation-banner" role="status">
-          <strong>Interpretation layer</strong> — a modern guess at what these fragments belonged to. Not scanned, not documented. Toggle off with G.
-        </div>
-      )}
+      <div className="interpretation-banner" role="note">
+        <strong>Interpretive architecture</strong> — the textured fragments are scans; their surrounding structures are a modern contextual frame.
+      </div>
+      <TimeOfDayControl />
       <SceneBoundary>
         <KeyboardControls map={controls}>
           <Scene content={content} />
