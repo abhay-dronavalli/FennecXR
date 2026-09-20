@@ -19,10 +19,8 @@ export default function Terrain() {
 
       <Block position={[0, -0.55, 1]} scale={[28, 1.1, 30]} />
       <Block position={[0, -0.65, -25]} scale={[27, 0.9, 12]} color={palette.stoneDark} />
-      <Block position={[0, -0.7, 33]} scale={[26, 0.72, 24]} color={palette.stone} />
 
       <Block position={[0, -0.5, -16.5]} scale={[7, 0.95, 7]} />
-      <Block position={[0, -0.5, 18.5]} scale={[7, 0.9, 7]} />
     </group>
   )
 }

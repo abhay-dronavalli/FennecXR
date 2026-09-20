@@ -33,6 +33,13 @@ const timePresets = {
   },
 }
 
+const templeRotation = Math.PI
+const upAxis = new THREE.Vector3(0, 1, 0)
+
+function isVisibleArtifact(artifact) {
+  return Boolean(artifact.model) || artifact.id === 'bird-of-prey-villas'
+}
+
 function GradientSky({ horizon, zenith }) {
   const uniforms = useMemo(() => ({
     horizonColor: { value: new THREE.Color(horizon) },
@@ -76,9 +83,17 @@ function World({ content }) {
   const timeOfDay = useExperienceStore((state) => state.timeOfDay)
   const preset = timePresets[timeOfDay] ?? timePresets.dusk
   const { camera, gl } = useThree()
-  const artifactPositions = useMemo(
-    () => content.artifacts.map((artifact) => ({ artifact, vector: new THREE.Vector3(...artifact.position) })),
+  const visibleArtifacts = useMemo(
+    () => content.artifacts.filter(isVisibleArtifact),
     [content.artifacts],
+  )
+  const artifactPositions = useMemo(
+    () => visibleArtifacts.map((artifact) => {
+      const vector = new THREE.Vector3(...artifact.position)
+      if (artifact.zone === 'temple') vector.applyAxisAngle(upAxis, templeRotation)
+      return { artifact, vector }
+    }),
+    [visibleArtifacts],
   )
   let lastNearestId = null
   let lastZoneId = 'byrsa'
@@ -140,7 +155,14 @@ function World({ content }) {
       <Terrain />
       <Props />
       <HeritageStructures />
-      {content.artifacts.map((artifact) => <Artifact key={artifact.id} artifact={artifact} />)}
+      <group rotation={[0, templeRotation, 0]}>
+        {visibleArtifacts
+          .filter((artifact) => artifact.zone === 'temple')
+          .map((artifact) => <Artifact key={artifact.id} artifact={artifact} />)}
+      </group>
+      {visibleArtifacts
+        .filter((artifact) => artifact.zone !== 'temple')
+        .map((artifact) => <Artifact key={artifact.id} artifact={artifact} />)}
       <Player />
       <PointerLockControls selector=".experience-shell canvas" />
     </>
@@ -153,7 +175,7 @@ export default function Scene({ content }) {
       aria-hidden="true"
       frameloop="always"
       shadows={{ type: THREE.PCFSoftShadowMap }}
-      camera={{ position: content.zones[0].spawn, fov: 60, near: 0.1, far: 260 }}
+      camera={{ position: content.zones[0].spawn, rotation: [0, Math.PI, 0], fov: 60, near: 0.1, far: 260 }}
       dpr={[1, 2]}
       gl={{
         alpha: false,

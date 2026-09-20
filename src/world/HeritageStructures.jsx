@@ -241,10 +241,10 @@ pedimentShape.lineTo(0, 2.65)
 pedimentShape.lineTo(8.3, 0)
 pedimentShape.closePath()
 
-function CarthageTemplePrecinct() {
+function CarthageTemplePrecinct({ lanternIntensity }) {
   const backBays = [-5.5, -2.8, 0, 2.8, 5.6]
   return (
-    <group>
+    <group rotation={[0, Math.PI, 0]}>
       <Stone position={[0, 0.22, -1]} scale={[19, 0.44, 16]} color={palette.stoneDark} />
       <Stone position={[0, 0.47, -1.2]} scale={[17.8, 0.22, 14.8]} color={palette.stone} />
       <Stone position={[0, 0.14, 7.55]} scale={[19.8, 0.28, 1.8]} color={palette.stoneDark} />
@@ -258,18 +258,24 @@ function CarthageTemplePrecinct() {
 
       {backBays.map((x) => (
         <group key={x}>
-          <Stone position={[x, 1.65, -8.35]} scale={[1.9, 2.8, 0.08]} color={palette.ink} />
+          <Stone position={[x, 1.65, -8.35]} scale={[1.9, 2.8, 0.08]} color={palette.sand} textured />
           <Stone position={[x, 0.42, -8.02]} scale={[2.1, 0.28, 0.7]} color={palette.stoneDark} />
         </group>
       ))}
       {[-5.2, -2.2].map((z) => (
         <group key={`west-${z}`}>
-          <Stone position={[-7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.ink} />
-          <Stone position={[7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.ink} />
+          <Stone position={[-7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.sand} textured />
+          <Stone position={[7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.sand} textured />
         </group>
       ))}
-      <Stone position={[7.35, 1.45, -0.8]} scale={[0.08, 2.5, 1.9]} color={palette.ink} />
+      <Stone position={[7.35, 1.45, -0.8]} scale={[0.08, 2.5, 1.9]} color={palette.sand} textured />
+      <Stone position={[-7.35, 1.45, -0.8]} scale={[0.08, 2.5, 1.9]} color={palette.sand} textured />
       <Stone position={[7.05, 0.38, -0.8]} scale={[0.7, 0.3, 2.1]} color={palette.stoneDark} />
+      <Stone position={[-7.05, 0.38, -0.8]} scale={[0.7, 0.3, 2.1]} color={palette.stoneDark} />
+
+      {[-4.8, 0, 4.8].map((x) => (
+        <Lantern key={`temple-lantern-${x}`} position={[x, 3.65, -5.1]} intensity={lanternIntensity} />
+      ))}
 
       <mesh castShadow position={[-6, 2.02, 1]}>
         <cylinderGeometry args={[0.36, 0.43, 3.65, 12]} />
@@ -293,36 +299,6 @@ function CarthageTemplePrecinct() {
 
       <ContextPlaque position={[0, 7.9, 1]} title="Carthage Roman temple precinct">
         Scans are embedded in an interpretive sanctuary frame, not a measured reconstruction
-      </ContextPlaque>
-    </group>
-  )
-}
-
-function ArchaeologyCourt() {
-  return (
-    <group>
-      <Stone position={[0, 0.12, 33]} scale={[22, 0.24, 20]} color={palette.stoneDark} />
-      <Stone position={[0, 0.18, 33]} scale={[20.5, 0.12, 18.5]} color={palette.stone} />
-      <Stone position={[-4.8, 1.45, 38.5]} scale={[10.2, 2.9, 0.5]} color={palette.stone} />
-      <Stone position={[5.8, 1.45, 38.5]} scale={[9.8, 2.9, 0.5]} color={palette.stoneDark} />
-
-      {[-7, -4.5, -2].map((x) => (
-        <group key={x}>
-          <Stone position={[x, 1.08, 38.22]} scale={[1.5, 2.15, 0.08]} color={palette.ink} />
-          <Stone position={[x, 0.22, 37.92]} scale={[1.7, 0.3, 0.7]} color={palette.stoneDark} />
-        </group>
-      ))}
-
-      <Stone position={[5.2, 0.18, 32.3]} scale={[2.4, 0.18, 10.5]} color={palette.sea} opacity={0.82} />
-      <Stone position={[3.65, 0.48, 32.3]} scale={[0.4, 0.85, 10.8]} />
-      <Stone position={[6.75, 0.48, 32.3]} scale={[0.4, 0.85, 10.8]} />
-      <Stone position={[5.5, 1.1, 38.2]} scale={[3.4, 2.2, 0.08]} color={palette.ink} />
-
-      <Stone position={[0, 0.4, 24.2]} scale={[8, 0.8, 1.2]} color={palette.stoneDark} />
-      <Column position={[-3.2, 0.4, 25]} height={2.25} radius={0.18} />
-      <Column position={[3.2, 0.4, 25]} height={2.25} radius={0.18} />
-      <ContextPlaque position={[0, 4, 25]} title="Carthage archaeology court">
-        Tophet and baths records retain their find-site labels inside one interpretive court
       </ContextPlaque>
     </group>
   )
@@ -393,8 +369,7 @@ export default function HeritageStructures() {
 
   return (
     <group>
-      <CarthageTemplePrecinct />
-      <ArchaeologyCourt />
+      <CarthageTemplePrecinct lanternIntensity={lanternIntensity} />
       <TunisiaPrayerCourt lanternIntensity={lanternIntensity} />
     </group>
   )
