@@ -56,22 +56,22 @@ function World({ content }) {
 
   return (
     <>
-      <color attach="background" args={[palette.skyHigh]} />
+      <color attach="background" args={['#d47b4d']} />
       <Sky
         distance={450000}
-        sunPosition={[-100, 20, 65]}
-        turbidity={4.5}
-        rayleigh={1.7}
-        mieCoefficient={0.003}
-        mieDirectionalG={0.82}
+        sunPosition={[-100, 4.5, 55]}
+        turbidity={8.5}
+        rayleigh={1.1}
+        mieCoefficient={0.007}
+        mieDirectionalG={0.9}
       />
-      <fog attach="fog" args={[palette.skyWarm, 68, 160]} />
-      <hemisphereLight args={['#f4e6cf', palette.stoneDark, 1.55]} />
+      <fog attach="fog" args={['#d98b5b', 66, 150]} />
+      <hemisphereLight args={['#e7a06a', '#584350', 1.7]} />
       <directionalLight
         castShadow
-        color={palette.skyWarm}
-        intensity={2.15}
-        position={[-28, 18, 22]}
+        color="#ffd09a"
+        intensity={2.35}
+        position={[-42, 10, 32]}
         shadow-mapSize={[1024, 1024]}
         shadow-camera-left={-55}
         shadow-camera-right={55}
@@ -99,7 +99,7 @@ export default function Scene({ content }) {
       onCreated={({ gl }) => {
         gl.outputColorSpace = THREE.SRGBColorSpace
         gl.toneMapping = THREE.ACESFilmicToneMapping
-        gl.toneMappingExposure = 0.82
+        gl.toneMappingExposure = 0.9
       }}
     >
       <Suspense fallback={null}>

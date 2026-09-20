@@ -59,6 +59,69 @@ function FloorInlay({ position, width, depth, color = palette.stoneDark }) {
   )
 }
 
+function DecorativeBand({ position, width, count = 18 }) {
+  return (
+    <group position={position}>
+      <Stone position={[0, 0, -0.025]} scale={[width, 0.32, 0.08]} color={palette.tileWhite} />
+      {Array.from({ length: count }, (_, index) => {
+        const x = -width / 2 + ((index + 0.5) * width) / count
+        return (
+          <mesh key={index} position={[x, 0, 0.04]} rotation={[0, 0, Math.PI / 4]}>
+            <boxGeometry args={[0.22, 0.22, 0.07]} />
+            <meshStandardMaterial color={index % 2 ? palette.tileBlue : palette.stoneDark} flatShading roughness={0.9} />
+          </mesh>
+        )
+      })}
+    </group>
+  )
+}
+
+function Minaret({ position }) {
+  return (
+    <group position={position}>
+      <Stone position={[0, 3.6, 0]} scale={[2.3, 7.2, 2.3]} color={palette.stone} />
+      {[1.1, 4.8, 7.15].map((y) => (
+        <Stone key={y} position={[0, y, 0]} scale={[2.55, 0.16, 2.55]} color={palette.stoneDark} />
+      ))}
+      <DecorativeBand position={[0, 5.85, 1.18]} width={2.15} count={7} />
+      {[3.45, 6.55].map((y) => (
+        <group key={y}>
+          <Stone position={[0, y, 1.18]} scale={[0.38, 0.85, 0.08]} color={palette.ink} />
+          <Stone position={[-1.18, y, 0]} scale={[0.08, 0.85, 0.38]} color={palette.ink} />
+        </group>
+      ))}
+      <Stone position={[0, 7.65, 0]} scale={[2.85, 0.55, 2.85]} color={palette.stoneDark} />
+      <Stone position={[0, 8.35, 0]} scale={[1.55, 1.25, 1.55]} color={palette.stone} />
+      <Stone position={[0, 9.05, 0]} scale={[2.05, 0.18, 2.05]} color={palette.stoneDark} />
+      <mesh castShadow position={[0, 9.55, 0]}>
+        <coneGeometry args={[0.65, 0.9, 4]} />
+        <meshStandardMaterial color={palette.tileBlue} flatShading roughness={0.9} />
+      </mesh>
+    </group>
+  )
+}
+
+function PrayerHallRoof() {
+  return (
+    <group>
+      <Stone position={[0, 3.35, -28.35]} scale={[21.7, 0.28, 3.35]} color={palette.stoneDark} />
+      <Stone position={[0, 3.55, -29.65]} scale={[22.3, 0.45, 0.28]} color={palette.stone} />
+      <mesh castShadow position={[0, 3.56, -28.45]}>
+        <cylinderGeometry args={[1.75, 1.95, 0.5, 8]} />
+        <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+      </mesh>
+      <mesh castShadow position={[0, 3.78, -28.45]}>
+        <sphereGeometry args={[1.75, 12, 5, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
+      </mesh>
+      <mesh castShadow position={[0, 5.56, -28.45]}>
+        <sphereGeometry args={[0.11, 8, 4]} />
+        <meshStandardMaterial color={palette.tileBlue} roughness={0.8} />
+      </mesh>
+    </group>
+  )
+}
+
 function ContextPlaque({ position, title, children }) {
   return (
     <Html center position={position} distanceFactor={4.5} className="study-label-wrap">
@@ -156,6 +219,8 @@ function TunisiaPrayerCourt() {
       <Stone position={[0, 3.75, -30.1]} scale={[24, 0.24, 2.2]} color={palette.stoneDark} />
       <Stone position={[5.8, 2.25, -29.02]} scale={[2.5, 1.65, 0.16]} color={palette.stoneDark} />
       <Stone position={[5.8, 3.17, -29]} scale={[3.1, 0.18, 0.22]} color={palette.stoneDark} />
+      <PrayerHallRoof />
+      <Minaret position={[9.4, 0, -29.1]} />
 
       <Stone position={[-11.25, 1.5, -21.7]} scale={[0.46, 3, 5]} />
       <Stone position={[-11.25, 1.5, -27.3]} scale={[0.46, 3, 3.8]} />
@@ -167,14 +232,23 @@ function TunisiaPrayerCourt() {
       <Arch position={[0, 0, -20.1]} width={3.2} height={3.4} />
       <Stone position={[-7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
       <Stone position={[7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
+      <Stone position={[-1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
+      <Stone position={[1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
+      <Stone position={[-0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
+      <Stone position={[0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
+      <Stone position={[0, 3.55, -20.15]} scale={[25, 0.38, 0.72]} color={palette.stone} />
+
+      <Stone position={[-6.7, 1.25, -19.9]} scale={[3.2, 2.75, 0.18]} color={palette.stone} />
+      <Arch position={[-6.7, 0.05, -19.68]} width={2.75} height={2.95} depth={0.2} />
+      <DecorativeBand position={[-6.7, 2.83, -19.51]} width={3.2} count={10} />
+      <DecorativeBand position={[5.8, 2.55, -19.88]} width={9.8} count={24} />
+      <Stone position={[5.8, 0.48, -19.89]} scale={[9.8, 0.12, 0.09]} color={palette.stone} />
+      <Stone position={[5.8, 1.7, -19.89]} scale={[9.8, 0.08, 0.09]} color={palette.stone} />
 
       {porticoXs.map((x) => <Column key={x} position={[x, 0.08, -27.25]} height={2.5} radius={0.15} />)}
       <Stone position={[0, 2.75, -27.25]} scale={[19, 0.3, 0.55]} color={palette.stoneDark} />
+      <Stone position={[0, 3.03, -27.8]} scale={[20.5, 0.22, 1.7]} color={palette.stone} />
 
-      <mesh receiveShadow position={[-5, 0.13, -24.5]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[1.4, 1.8, 12]} />
-        <meshStandardMaterial color={palette.stoneDark} flatShading />
-      </mesh>
       <mesh receiveShadow position={[5, 0.13, -24.5]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[1.1, 1.45, 12]} />
         <meshStandardMaterial color={palette.sea} flatShading />
