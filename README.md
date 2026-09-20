@@ -9,9 +9,10 @@ Carthage Underfoot is made for high-school and early university learners. Its
 goal is to connect scanned fragments with named places and with the preservation
 work behind the Tanit XR archive.
 
-The current local build contains 21 Carthage archive records and a separate
-Tunisia Details Court. Sixteen downloaded scans are integrated; records whose
-GLBs have not been supplied remain visible as faceted stone proxies.
+The current local build contains 21 Carthage archive records consolidated into
+a Roman temple precinct and an archaeology court, plus a separate Tunisia
+Details mosque. Sixteen downloaded scans are integrated; records whose GLBs
+have not been supplied remain visible as faceted stone proxies.
 
 ## How to use it
 

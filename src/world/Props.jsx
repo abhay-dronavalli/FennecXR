@@ -1,14 +1,14 @@
 import { palette } from '../palette.js'
 
 const trees = [
-  [-14, 0, 11], [-18, 0, 6], [13, 0, 13], [17, 0, 8],
-  [-12, 0, 27], [12, 0, 28], [-14, 0, 38], [14, 0, 40],
-  [-23, 0, -13], [-39, 0, 7], [24, 0, -12], [39, 0, 8],
+  [-12, 0, 11], [-11, 0, 6], [11, 0, 13], [12, 0, 8],
+  [-12, 0, 27], [12, 0, 28], [-12, 0, 38], [12, 0, 40],
+  [-12, 0, -12], [12, 0, -11], [-11, 0, 44], [11, 0, 44],
 ]
 
 const rocks = [
-  [-12, 0.35, -7, 0.9], [14, 0.25, -8, 0.65], [-20, 0.3, 16, 0.8],
-  [18, 0.28, 20, 0.7], [-40, 0.3, -8, 0.75], [40, 0.35, 5, 0.95],
+  [-12, 0.35, -7, 0.9], [12, 0.25, -8, 0.65], [-6, 0.3, 16, 0.8],
+  [12, 0.28, 22, 0.7], [-11, 0.3, 34, 0.75], [11, 0.35, 37, 0.95],
 ]
 
 function Cypress({ position }) {
@@ -35,18 +35,6 @@ export default function Props() {
           <icosahedronGeometry args={[0.8, 0]} />
           <meshStandardMaterial color={palette.stoneDark} flatShading />
         </mesh>
-      ))}
-      {[-5, 0, 5].map((x) => (
-        <group key={x} position={[x, 0, 13]}>
-          <mesh castShadow position={[0, 1.2, 0]}>
-            <cylinderGeometry args={[0.7, 0.82, 2.4, 8]} />
-            <meshStandardMaterial color={palette.stone} flatShading />
-          </mesh>
-          <mesh castShadow position={[0, 2.6, 0]}>
-            <cylinderGeometry args={[0.92, 0.78, 0.45, 8]} />
-            <meshStandardMaterial color={palette.stoneDark} flatShading />
-          </mesh>
-        </group>
       ))}
     </group>
   )

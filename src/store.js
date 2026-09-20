@@ -5,7 +5,7 @@ const timeOrder = ['dawn', 'day', 'dusk', 'night']
 export const useExperienceStore = create((set) => ({
   activeArtifact: null,
   nearestArtifact: null,
-  currentZone: 'byrsa',
+  currentZone: 'temple',
   hasEntered: false,
   timeOfDay: 'dusk',
   reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,

@@ -235,71 +235,92 @@ function ContextPlaque({ position, title, children }) {
   )
 }
 
-function ByrsaForumFrame() {
-  const columnXs = [-9, -4.5, 0, 4.5, 9]
+const pedimentShape = new THREE.Shape()
+pedimentShape.moveTo(-8.3, 0)
+pedimentShape.lineTo(0, 2.65)
+pedimentShape.lineTo(8.3, 0)
+pedimentShape.closePath()
+
+function CarthageTemplePrecinct() {
+  const backBays = [-5.5, -2.8, 0, 2.8, 5.6]
   return (
     <group>
-      <Stone position={[0, 0.18, 10.7]} scale={[22, 0.36, 0.65]} color={palette.stoneDark} />
-      <Stone position={[-11, 0.18, 0]} scale={[0.65, 0.36, 20]} color={palette.stoneDark} />
-      <Stone position={[11, 0.18, 0]} scale={[0.65, 0.36, 20]} color={palette.stoneDark} />
-      {columnXs.map((x, index) => (
-        <Column key={x} position={[x, 0.35, 10.7]} height={index % 2 ? 1.7 : 2.4} radius={0.22} />
+      <Stone position={[0, 0.22, -1]} scale={[19, 0.44, 16]} color={palette.stoneDark} />
+      <Stone position={[0, 0.47, -1.2]} scale={[17.8, 0.22, 14.8]} color={palette.stone} />
+      <Stone position={[0, 0.14, 7.55]} scale={[19.8, 0.28, 1.8]} color={palette.stoneDark} />
+      <Stone position={[0, 0.28, 6.25]} scale={[18.8, 0.3, 1.4]} color={palette.stone} />
+      <Stone position={[0, 0.42, 5.15]} scale={[17.8, 0.3, 1.2]} color={palette.sand} />
+
+      <Stone position={[0, 2.15, -8.65]} scale={[15.8, 4.1, 0.55]} color={palette.stone} />
+      <Stone position={[-7.65, 2.15, -4.5]} scale={[0.5, 4.1, 8.4]} color={palette.stone} />
+      <Stone position={[7.65, 2.15, -4.5]} scale={[0.5, 4.1, 8.4]} color={palette.stone} />
+      <Stone position={[0, 4.35, -4.4]} scale={[16.3, 0.32, 9]} color={palette.stoneDark} />
+
+      {backBays.map((x) => (
+        <group key={x}>
+          <Stone position={[x, 1.65, -8.35]} scale={[1.9, 2.8, 0.08]} color={palette.ink} />
+          <Stone position={[x, 0.42, -8.02]} scale={[2.1, 0.28, 0.7]} color={palette.stoneDark} />
+        </group>
+      ))}
+      {[-5.2, -2.2].map((z) => (
+        <group key={`west-${z}`}>
+          <Stone position={[-7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.ink} />
+          <Stone position={[7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.ink} />
+        </group>
       ))}
 
-      <Stone position={[5.7, 0.72, -9.5]} scale={[5.2, 1.45, 0.5]} />
-      <Stone position={[10.1, 0.45, -9.5]} scale={[2, 0.9, 0.5]} color={palette.stoneDark} />
-      <Stone position={[-7.2, 0.3, -4.1]} scale={[4.4, 0.28, 1.4]} color={palette.stoneDark} />
-      <mesh castShadow position={[-8.3, 0.72, -4.2]} rotation={[0.12, 0.1, Math.PI / 2.3]}>
-        <cylinderGeometry args={[0.46, 0.52, 3.4, 8]} />
+      <mesh castShadow position={[-6, 2.02, 1]}>
+        <cylinderGeometry args={[0.36, 0.43, 3.65, 12]} />
+        <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
+      </mesh>
+      <mesh castShadow position={[-3, 3.25, 1]}>
+        <cylinderGeometry args={[0.34, 0.38, 1.55, 12]} />
+        <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
+      </mesh>
+      <mesh castShadow position={[3, 2.55, 1]}>
+        <cylinderGeometry args={[0.36, 0.44, 3.75, 12]} />
+        <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
+      </mesh>
+      <Column position={[6, 0.45, 1]} height={3.75} radius={0.36} />
+      <Stone position={[0, 4.72, 1]} scale={[16.9, 0.48, 1.05]} color={palette.stoneDark} />
+      <mesh castShadow receiveShadow position={[0, 4.95, 0.47]}>
+        <extrudeGeometry args={[pedimentShape, { depth: 0.52, bevelEnabled: false }]} />
         <meshStandardMaterial color={palette.stone} flatShading roughness={0.96} />
       </mesh>
+      <Stone position={[0, 5.08, 0.38]} scale={[17.4, 0.18, 0.32]} color={palette.stoneDark} />
 
-      <ContextPlaque position={[0, 3.5, 10.7]} title="Byrsa forum frame">
-        Scans are real · foundations and colonnade are interpretive
+      <ContextPlaque position={[0, 7.9, 1]} title="Carthage Roman temple precinct">
+        Scans are embedded in an interpretive sanctuary frame, not a measured reconstruction
       </ContextPlaque>
     </group>
   )
 }
 
-function VillaFrame() {
-  const columns = [-8, -4, 4, 8]
+function ArchaeologyCourt() {
   return (
     <group>
-      <Stone position={[0, 0.12, 22]} scale={[23, 0.24, 0.5]} color={palette.stoneDark} />
-      <Stone position={[0, 0.5, 42]} scale={[23, 1, 0.5]} />
-      <Stone position={[-11.5, 0.5, 32]} scale={[0.5, 1, 20]} />
-      <Stone position={[11.5, 0.5, 32]} scale={[0.5, 1, 20]} />
-      <Stone position={[0, 0.08, 31]} scale={[6.1, 0.12, 3.3]} color={palette.stoneDark} />
-      <Stone position={[0, 0.11, 31]} scale={[5, 0.08, 2.2]} color={palette.sand} />
-      {columns.map((x) => (
-        <Column key={`north-${x}`} position={[x, 0.12, 26]} height={2.3} radius={0.16} />
-      ))}
-      {columns.map((x) => (
-        <Column key={`south-${x}`} position={[x, 0.12, 36.5]} height={1.9} radius={0.16} />
-      ))}
-      <Stone position={[-6.8, 0.55, 39.5]} scale={[7, 1.1, 0.42]} color={palette.stoneDark} />
-      <Stone position={[7.2, 0.55, 39.5]} scale={[6.2, 1.1, 0.42]} color={palette.stoneDark} />
-      <ContextPlaque position={[0, 3.4, 26]} title="Villa floor frame">
-        The mosaic is scanned · rooms and peristyle are interpretive
-      </ContextPlaque>
-    </group>
-  )
-}
+      <Stone position={[0, 0.12, 33]} scale={[22, 0.24, 20]} color={palette.stoneDark} />
+      <Stone position={[0, 0.18, 33]} scale={[20.5, 0.12, 18.5]} color={palette.stone} />
+      <Stone position={[-4.8, 1.45, 38.5]} scale={[10.2, 2.9, 0.5]} color={palette.stone} />
+      <Stone position={[5.8, 1.45, 38.5]} scale={[9.8, 2.9, 0.5]} color={palette.stoneDark} />
 
-function BathsFrame() {
-  const arches = [-6, 0, 6]
-  return (
-    <group position={[31, 0, -2]}>
-      <Stone position={[0, 0.08, 0]} scale={[19, 0.16, 18]} color={palette.stoneDark} />
-      <Stone position={[0, 0.12, 0]} scale={[17, 0.12, 16]} color={palette.stone} />
-      <Stone position={[0, 0.15, 0]} scale={[2.2, 0.18, 15]} color={palette.sea} opacity={0.75} />
-      <Stone position={[-5.5, 0.55, 0]} scale={[0.55, 1.1, 14]} />
-      <Stone position={[5.5, 0.55, 0]} scale={[0.55, 1.1, 14]} />
-      {arches.map((z) => <Arch key={z} position={[-5.5, 1.05, z]} rotation={[0, Math.PI / 2, 0]} width={2.2} height={2.7} />)}
-      {arches.map((z) => <Arch key={`east-${z}`} position={[5.5, 1.05, z]} rotation={[0, -Math.PI / 2, 0]} width={2.2} height={2.7} />)}
-      <Stone position={[2.1, 0.75, 0]} scale={[2.8, 1.5, 0.5]} color={palette.stoneDark} />
-      <ContextPlaque position={[0, 4.3, -7]} title="Baths structure frame">
-        The carved block is scanned · the water axis and vaults are interpretive
+      {[-7, -4.5, -2].map((x) => (
+        <group key={x}>
+          <Stone position={[x, 1.08, 38.22]} scale={[1.5, 2.15, 0.08]} color={palette.ink} />
+          <Stone position={[x, 0.22, 37.92]} scale={[1.7, 0.3, 0.7]} color={palette.stoneDark} />
+        </group>
+      ))}
+
+      <Stone position={[5.2, 0.18, 32.3]} scale={[2.4, 0.18, 10.5]} color={palette.sea} opacity={0.82} />
+      <Stone position={[3.65, 0.48, 32.3]} scale={[0.4, 0.85, 10.8]} />
+      <Stone position={[6.75, 0.48, 32.3]} scale={[0.4, 0.85, 10.8]} />
+      <Stone position={[5.5, 1.1, 38.2]} scale={[3.4, 2.2, 0.08]} color={palette.ink} />
+
+      <Stone position={[0, 0.4, 24.2]} scale={[8, 0.8, 1.2]} color={palette.stoneDark} />
+      <Column position={[-3.2, 0.4, 25]} height={2.25} radius={0.18} />
+      <Column position={[3.2, 0.4, 25]} height={2.25} radius={0.18} />
+      <ContextPlaque position={[0, 4, 25]} title="Carthage archaeology court">
+        Tophet and baths records retain their find-site labels inside one interpretive court
       </ContextPlaque>
     </group>
   )
@@ -370,9 +391,8 @@ export default function HeritageStructures() {
 
   return (
     <group>
-      <ByrsaForumFrame />
-      <VillaFrame />
-      <BathsFrame />
+      <CarthageTemplePrecinct />
+      <ArchaeologyCourt />
       <TunisiaPrayerCourt lanternIntensity={lanternIntensity} />
     </group>
   )

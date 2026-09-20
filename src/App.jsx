@@ -94,9 +94,6 @@ function Experience({ content, archiveDb }) {
         <span className="site-mark__title">Carthage Underfoot</span>
         <span className="site-mark__place">{zone.name}</span>
       </header>
-      <div className="interpretation-banner" role="note">
-        <strong>Interpretive architecture</strong> — the textured fragments are scans; their surrounding structures are a modern contextual frame.
-      </div>
       <TimeOfDayControl />
       <SceneBoundary>
         <KeyboardControls map={controls}>
