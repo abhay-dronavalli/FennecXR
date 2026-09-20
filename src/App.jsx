@@ -7,6 +7,7 @@ import HelpBar from './ui/HelpBar.jsx'
 import LoadingStatus from './ui/LoadingStatus.jsx'
 import MusicPlayer from './ui/MusicPlayer.jsx'
 import TimeOfDayControl from './ui/TimeOfDayControl.jsx'
+import Pamphlet from './ui/Pamphlet.jsx'
 import { useExperienceStore } from './store.js'
 
 const controls = [
@@ -43,13 +44,15 @@ class SceneBoundary extends Component {
   }
 }
 
-function Experience({ content }) {
-  const activeArtifact = useExperienceStore((state) => state.activeArtifact)
+function Experience({ content, archiveDb }) {
+  const activeArtifact  = useExperienceStore((state) => state.activeArtifact)
   const setActiveArtifact = useExperienceStore((state) => state.setActiveArtifact)
   const nearestArtifact = useExperienceStore((state) => state.nearestArtifact)
-  const hasEntered = useExperienceStore((state) => state.hasEntered)
-  const currentZone = useExperienceStore((state) => state.currentZone)
-  const cycleTimeOfDay = useExperienceStore((state) => state.cycleTimeOfDay)
+  const hasEntered      = useExperienceStore((state) => state.hasEntered)
+  const currentZone     = useExperienceStore((state) => state.currentZone)
+  const cycleTimeOfDay  = useExperienceStore((state) => state.cycleTimeOfDay)
+  const pamphletOpen    = useExperienceStore((state) => state.pamphletOpen)
+  const setPamphletOpen = useExperienceStore((state) => state.setPamphletOpen)
   const [pointerLocked, setPointerLocked] = useState(document.pointerLockElement != null)
 
   const resumeWorld = useCallback(() => {
@@ -69,15 +72,19 @@ function Experience({ content }) {
 
   useEffect(() => {
     const handleKey = (event) => {
-      if (event.code === 'Escape' && activeArtifact) closeArtifact()
-      if (event.code === 'KeyE' && nearestArtifact && !activeArtifact) {
+      if (event.code === 'Escape') {
+        if (pamphletOpen) { setPamphletOpen(false); return }
+        if (activeArtifact) closeArtifact()
+      }
+      if (event.code === 'KeyE' && nearestArtifact && !activeArtifact && !pamphletOpen) {
         setActiveArtifact(nearestArtifact)
       }
-      if (event.code === 'KeyT' && !event.repeat) cycleTimeOfDay()
+      if (event.code === 'KeyT' && !event.repeat && !pamphletOpen) cycleTimeOfDay()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeArtifact, closeArtifact, cycleTimeOfDay, nearestArtifact, setActiveArtifact])
+  }, [activeArtifact, closeArtifact, cycleTimeOfDay,
+      nearestArtifact, pamphletOpen, setActiveArtifact, setPamphletOpen])
 
   const zone = content.zones.find((item) => item.id === currentZone) ?? content.zones[0]
 
@@ -111,6 +118,7 @@ function Experience({ content }) {
         </button>
       )}
       <MusicPlayer />
+      <Pamphlet content={content} archiveDb={archiveDb} />
       <Onboarding />
       {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={closeArtifact} />}
       <HelpBar />
@@ -119,17 +127,20 @@ function Experience({ content }) {
 }
 
 export default function App() {
-  const [content, setContent] = useState(null)
-  const [error, setError] = useState(null)
+  const [content, setContent]     = useState(null)
+  const [archiveDb, setArchiveDb] = useState([])
+  const [error, setError]         = useState(null)
 
   useEffect(() => {
     fetch('/content.json')
-      .then((response) => {
-        if (!response.ok) throw new Error(`Content request failed: ${response.status}`)
-        return response.json()
-      })
+      .then((r) => { if (!r.ok) throw new Error(r.status); return r.json() })
       .then(setContent)
       .catch(setError)
+    // Archive-db is optional — don't block the scene on it
+    fetch('/archive-db.json')
+      .then((r) => r.ok ? r.json() : { artifacts: [] })
+      .then((data) => setArchiveDb(data.artifacts ?? data))
+      .catch(() => setArchiveDb([]))
   }, [])
 
   if (error) {
@@ -143,5 +154,5 @@ export default function App() {
   }
 
   if (!content) return <div className="loading-screen" role="status">Preparing the archive…</div>
-  return <Experience content={content} />
+  return <Experience content={content} archiveDb={archiveDb} />
 }
