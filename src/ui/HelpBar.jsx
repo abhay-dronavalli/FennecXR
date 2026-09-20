@@ -10,6 +10,7 @@ export default function HelpBar() {
       <span><kbd>E</kbd> inspect</span>
       <span><kbd>G</kbd> layers</span>
       <span><kbd>,</kbd><kbd>.</kbd> track  <kbd>M</kbd> mute</span>
+      <span><kbd>T</kbd> time</span>
       <span><kbd>Esc</kbd> release mouse</span>
     </div>
   )

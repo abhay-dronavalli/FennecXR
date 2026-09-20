@@ -1,4 +1,4 @@
-import { Component, useEffect, useState } from 'react'
+import { Component, useCallback, useEffect, useState } from 'react'
 import { KeyboardControls } from '@react-three/drei'
 import Scene from './world/Scene.jsx'
 import Onboarding from './ui/Onboarding.jsx'
@@ -6,6 +6,7 @@ import InfoPanel from './ui/InfoPanel.jsx'
 import HelpBar from './ui/HelpBar.jsx'
 import LoadingStatus from './ui/LoadingStatus.jsx'
 import MusicPlayer from './ui/MusicPlayer.jsx'
+import TimeOfDayControl from './ui/TimeOfDayControl.jsx'
 import { useExperienceStore } from './store.js'
 
 const controls = [
@@ -48,20 +49,35 @@ function Experience({ content }) {
   const nearestArtifact = useExperienceStore((state) => state.nearestArtifact)
   const hasEntered = useExperienceStore((state) => state.hasEntered)
   const currentZone = useExperienceStore((state) => state.currentZone)
-  const interpretationVisible = useExperienceStore((state) => state.interpretationVisible)
-  const toggleInterpretation = useExperienceStore((state) => state.toggleInterpretation)
+  const cycleTimeOfDay = useExperienceStore((state) => state.cycleTimeOfDay)
+  const [pointerLocked, setPointerLocked] = useState(document.pointerLockElement != null)
+
+  const resumeWorld = useCallback(() => {
+    document.querySelector('.experience-shell canvas')?.requestPointerLock?.()
+  }, [])
+
+  const closeArtifact = useCallback(() => {
+    setActiveArtifact(null)
+    resumeWorld()
+  }, [resumeWorld, setActiveArtifact])
+
+  useEffect(() => {
+    const handlePointerLockChange = () => setPointerLocked(document.pointerLockElement != null)
+    document.addEventListener('pointerlockchange', handlePointerLockChange)
+    return () => document.removeEventListener('pointerlockchange', handlePointerLockChange)
+  }, [])
 
   useEffect(() => {
     const handleKey = (event) => {
-      if (event.code === 'Escape' && activeArtifact) setActiveArtifact(null)
+      if (event.code === 'Escape' && activeArtifact) closeArtifact()
       if (event.code === 'KeyE' && nearestArtifact && !activeArtifact) {
         setActiveArtifact(nearestArtifact)
       }
-      if (event.code === 'KeyG' && !event.repeat) toggleInterpretation()
+      if (event.code === 'KeyT' && !event.repeat) cycleTimeOfDay()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [activeArtifact, nearestArtifact, setActiveArtifact, toggleInterpretation])
+  }, [activeArtifact, closeArtifact, cycleTimeOfDay, nearestArtifact, setActiveArtifact])
 
   const zone = content.zones.find((item) => item.id === currentZone) ?? content.zones[0]
 
@@ -71,11 +87,10 @@ function Experience({ content }) {
         <span className="site-mark__title">Carthage Underfoot</span>
         <span className="site-mark__place">{zone.name}</span>
       </header>
-      {interpretationVisible && (
-        <div className="interpretation-banner" role="status">
-          <strong>Interpretation layer</strong> — a modern guess at what these fragments belonged to. Not scanned, not documented. Toggle off with G.
-        </div>
-      )}
+      <div className="interpretation-banner" role="note">
+        <strong>Interpretive architecture</strong> — the textured fragments are scans; their surrounding structures are a modern contextual frame.
+      </div>
+      <TimeOfDayControl />
       <SceneBoundary>
         <KeyboardControls map={controls}>
           <Scene content={content} />
@@ -83,6 +98,12 @@ function Experience({ content }) {
       </SceneBoundary>
       <LoadingStatus />
       {hasEntered && <div className="crosshair" aria-hidden="true" />}
+      {hasEntered && !activeArtifact && !pointerLocked && (
+        <button className="resume-prompt" onClick={resumeWorld}>
+          <strong>Resume exploring</strong>
+          <small>Click to capture the mouse</small>
+        </button>
+      )}
       {hasEntered && nearestArtifact && !activeArtifact && (
         <button className="proximity-prompt" onClick={() => setActiveArtifact(nearestArtifact)}>
           <kbd>E</kbd>
@@ -91,7 +112,7 @@ function Experience({ content }) {
       )}
       <MusicPlayer />
       <Onboarding />
-      {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={() => setActiveArtifact(null)} />}
+      {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={closeArtifact} />}
       <HelpBar />
     </div>
   )

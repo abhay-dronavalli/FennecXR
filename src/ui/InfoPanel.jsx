@@ -6,12 +6,7 @@ export default function InfoPanel({ artifact, onClose }) {
   useEffect(() => {
     if (document.pointerLockElement) document.exitPointerLock()
     closeButton.current?.focus()
-    const onKey = (event) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [])
 
   return (
     <aside className="info-panel" role="dialog" aria-modal="true" aria-labelledby="artifact-title">

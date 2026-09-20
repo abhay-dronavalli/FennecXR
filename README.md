@@ -18,7 +18,7 @@ GLBs have not been supplied remain visible as faceted stone proxies.
 - Select **Enter the landscape** to opt into mouse look.
 - Use `WASD` or the arrow keys to move. Hold `Shift` to move faster.
 - Walk near an object and press `E` to open its record.
-- Press `G` to show or hide the interpretation layer.
+- Use the **Time of day** control or press `T` to cycle through dawn, day, dusk, and night.
 - Press `Esc` to close a record or release the mouse.
 
 ## What is real and what is not
@@ -27,7 +27,7 @@ The textured objects are photogrammetry scans supplied through Tanit XR. The
 terrain, walls, columns, vegetation, plinths, and artifact arrangement are
 modern low-poly abstractions. Fragments are set into deliberately simplified
 forum, villa, baths, and prayer-courtyard frames so their architectural role is
-legible. These frames are not measured reconstructions and can be hidden with `G`.
+legible. These always-visible frames are not measured reconstructions.
 
 Kairouan, Tunis, and Zaghouan material appears in a separate study court
 and is labeled with its real source place; it is not presented as having been
