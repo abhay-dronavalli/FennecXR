@@ -268,6 +268,8 @@ function CarthageTemplePrecinct() {
           <Stone position={[7.35, 1.55, z]} scale={[0.08, 2.7, 1.9]} color={palette.ink} />
         </group>
       ))}
+      <Stone position={[7.35, 1.45, -0.8]} scale={[0.08, 2.5, 1.9]} color={palette.ink} />
+      <Stone position={[7.05, 0.38, -0.8]} scale={[0.7, 0.3, 2.1]} color={palette.stoneDark} />
 
       <mesh castShadow position={[-6, 2.02, 1]}>
         <cylinderGeometry args={[0.36, 0.43, 3.65, 12]} />

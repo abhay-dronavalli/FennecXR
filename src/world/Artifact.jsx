@@ -16,13 +16,46 @@ function PlaceholderGeometry({ type }) {
 }
 
 function Placeholder({ artifact, onOpen }) {
+  const interactionProps = {
+    onClick: onOpen,
+    onPointerEnter: () => { document.body.style.cursor = 'pointer' },
+    onPointerLeave: () => { document.body.style.cursor = '' },
+  }
+
+  if (artifact.placeholder === 'bird') {
+    return (
+      <group {...interactionProps}>
+        <mesh castShadow receiveShadow scale={[0.72, 1, 0.4]}>
+          <dodecahedronGeometry args={[0.48, 0]} />
+          <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+        </mesh>
+        <mesh castShadow position={[0, 0.58, 0.02]}>
+          <icosahedronGeometry args={[0.24, 0]} />
+          <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+        </mesh>
+        <mesh castShadow position={[0, 0.56, 0.27]} rotation={[Math.PI / 2, 0, 0]}>
+          <coneGeometry args={[0.1, 0.32, 4]} />
+          <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+        </mesh>
+        {[-1, 1].map((side) => (
+          <mesh key={side} castShadow position={[side * 0.42, 0.02, -0.02]} rotation={[0, 0, side * -0.22]} scale={[0.45, 0.95, 0.24]}>
+            <tetrahedronGeometry args={[0.55, 0]} />
+            <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+          </mesh>
+        ))}
+        <mesh castShadow position={[0, -0.7, -0.04]} rotation={[0, 0, Math.PI]}>
+          <coneGeometry args={[0.28, 0.72, 5]} />
+          <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+        </mesh>
+      </group>
+    )
+  }
+
   return (
     <mesh
       castShadow
       receiveShadow
-      onClick={onOpen}
-      onPointerEnter={() => { document.body.style.cursor = 'pointer' }}
-      onPointerLeave={() => { document.body.style.cursor = '' }}
+      {...interactionProps}
     >
       <PlaceholderGeometry type={artifact.placeholder} />
       <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
