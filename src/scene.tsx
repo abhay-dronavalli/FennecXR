@@ -67,7 +67,14 @@ const matGhost = new THREE.MeshStandardMaterial({
   opacity: 0.22,
 });
 
+const matRubble = stone("#c2b094", 0.98);
+const matRubbleDark = stone("#a89478", 1);
+/** Unlit and slightly darker than the haze: at 300+ units the sun term only
+ *  made these read as bright boxes instead of distant land. */
+const matHorizon = new THREE.MeshBasicMaterial({ color: "#a2937a" });
+
 const geoColumn = new THREE.CylinderGeometry(0.45, 0.55, 7, 10);
+const geoDrum = new THREE.CylinderGeometry(0.52, 0.52, 1.3, 10);
 const geoBox = new THREE.BoxGeometry(1, 1, 1);
 const geoPlinth = new THREE.CylinderGeometry(0.85, 0.95, 1, 12);
 const geoPlane = new THREE.PlaneGeometry(1, 1);
@@ -142,6 +149,22 @@ function groundTexture(base: string, size = 256) {
   return t;
 }
 
+/** Stable per-object jitter, so the arc is not a machine-placed grid. */
+function jitter(uid: string) {
+  let h = 2166136261;
+  for (let i = 0; i < uid.length; i++) {
+    h ^= uid.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const r = mulberry32(h >>> 0);
+  return {
+    height: 0.82 + r() * 0.42,
+    spin: (r() - 0.5) * 0.5,
+    fan: (r() - 0.5) * 0.42,
+    tilt: (r() - 0.5) * 0.1,
+  };
+}
+
 /** Small deterministic PRNG, so scenery is identical on every load. */
 function mulberry32(seed: number) {
   let a = seed >>> 0;
@@ -188,7 +211,7 @@ function SunLight() {
       <directionalLight
         ref={ref}
         target={target}
-        intensity={2.9}
+        intensity={2.1}
         color="#fff0d6"
         castShadow
         shadow-mapSize-width={SHADOW_MAP}
@@ -395,7 +418,227 @@ function Ground() {
   );
 }
 
+/* --------------------------------------------------------------- scenery */
+
+/**
+ * Reused primitive props: broken wall stubs, rubble piles and fallen column
+ * drums. They exist to give the middle distance something to occlude and cast
+ * shadows onto. Placement is seeded, so the world is identical on every load.
+ */
+function Rubble({ rnd }: { rnd: () => number }) {
+  const bits = useMemo(
+    () =>
+      Array.from({ length: 3 }, () => ({
+        p: [(rnd() - 0.5) * 2.2, 0, (rnd() - 0.5) * 2.2] as [
+          number,
+          number,
+          number
+        ],
+        s: 0.35 + rnd() * 0.8,
+        ry: rnd() * Math.PI,
+        rx: (rnd() - 0.5) * 0.5,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  return (
+    <>
+      {bits.map((b, i) => (
+        <mesh
+          key={i}
+          position={[b.p[0], b.s / 2, b.p[2]]}
+          rotation={[b.rx, b.ry, 0]}
+          geometry={geoBox}
+          material={i % 2 ? matRubble : matRubbleDark}
+          scale={[b.s * 1.4, b.s, b.s * 1.1]}
+          castShadow
+          receiveShadow
+        />
+      ))}
+    </>
+  );
+}
+
+function Prop({ kind, rnd }: { kind: number; rnd: () => number }) {
+  if (kind === 0) {
+    // broken wall stub
+    const w = 2 + rnd() * 3.5;
+    const h = 1 + rnd() * 1.8;
+    return (
+      <>
+        <mesh
+          position={[0, h / 2, 0]}
+          geometry={geoBox}
+          material={matRubble}
+          scale={[w, h, 0.6 + rnd() * 0.35]}
+          castShadow
+          receiveShadow
+        />
+        <mesh
+          position={[w * 0.35, h * 0.55, 0]}
+          geometry={geoBox}
+          material={matRubbleDark}
+          scale={[w * 0.35, h * 0.45, 0.62]}
+          castShadow
+          receiveShadow
+        />
+      </>
+    );
+  }
+  if (kind === 1) {
+    // fallen column, lying on its side
+    return (
+      <mesh
+        position={[0, 0.52, 0]}
+        rotation={[Math.PI / 2, 0, rnd() * 0.6 - 0.3]}
+        geometry={geoDrum}
+        material={matRubble}
+        scale={[1, 1.4 + rnd() * 1.6, 1]}
+        castShadow
+        receiveShadow
+      />
+    );
+  }
+  return <Rubble rnd={rnd} />;
+}
+
+function Scenery() {
+  const props = useMemo(() => {
+    const rnd = mulberry32(0xca27a6);
+    const out: { pos: [number, number, number]; ry: number; kind: number }[] = [];
+
+    // A skirt of debris around each zone, outside the artifact arcs.
+    ZONES.forEach((z) => {
+      const entrance = Math.atan2(-z.center[0], -z.center[1]);
+      for (let i = 0; i < 9; i++) {
+        // Keep the entrance corridor clear so the way in still reads.
+        const a = entrance + Math.PI + (rnd() - 0.5) * Math.PI * 1.7;
+        const r = z.radius * (0.72 + rnd() * 0.55);
+        out.push({
+          pos: [
+            z.center[0] + Math.sin(a) * r,
+            0,
+            z.center[1] + Math.cos(a) * r,
+          ],
+          ry: rnd() * Math.PI * 2,
+          kind: i % 3,
+        });
+      }
+    });
+
+    // Scatter across the open ground between zones, so the walk is not empty.
+    for (let i = 0; i < 130; i++) {
+      const a = rnd() * Math.PI * 2;
+      const r = 40 + rnd() * 235;
+      const x = Math.sin(a) * r;
+      const zz = Math.cos(a) * r;
+      // Never inside a zone platform or on the signpost plaza.
+      const clash =
+        Math.hypot(x, zz) < 16 ||
+        ZONES.some(
+          (z) => Math.hypot(x - z.center[0], zz - z.center[1]) < z.radius + 4
+        );
+      if (clash) continue;
+      out.push({ pos: [x, 0, zz], ry: rnd() * Math.PI * 2, kind: i % 3 });
+    }
+    return out;
+  }, []);
+
+  // Distant silhouettes, sitting deep in the fog so they read as haze-blue
+  // landforms rather than as boxes.
+  const horizon = useMemo(() => {
+    const rnd = mulberry32(0x40f1);
+    return Array.from({ length: 26 }, (_, i) => {
+      const a = (i / 26) * Math.PI * 2 + rnd() * 0.3;
+      const r = 340 + rnd() * 100;
+      return {
+        pos: [Math.sin(a) * r, 0, Math.cos(a) * r] as [number, number, number],
+        ry: a,
+        s: [
+          34 + rnd() * 74,
+          4 + rnd() * 11,
+          18 + rnd() * 34,
+        ] as [number, number, number],
+      };
+    });
+  }, []);
+
+  return (
+    <>
+      {props.map((p, i) => (
+        <group key={i} position={p.pos} rotation={[0, p.ry, 0]}>
+          <Prop kind={p.kind} rnd={mulberry32(0x9e37 + i * 2654435761)} />
+        </group>
+      ))}
+      {horizon.map((h, i) => (
+        <mesh
+          key={i}
+          position={[h.pos[0], h.s[1] / 2, h.pos[2]]}
+          rotation={[0, h.ry, 0]}
+          geometry={geoBox}
+          material={matHorizon}
+          scale={h.s}
+        />
+      ))}
+    </>
+  );
+}
+
 /* ------------------------------------------------------------------ zone */
+
+/**
+ * The zone name, readable from across the map but shrinking away as you walk
+ * in: at world scale a 4-unit glyph fills the screen from ten metres, and the
+ * architecture already tells you where you are once you are inside.
+ */
+function ZoneLabel({ zone }: { zone: Zone }) {
+  const ref = useRef<THREE.Group>(null);
+  const [cx, cz] = zone.center;
+
+  useFrame(() => {
+    const g = ref.current;
+    if (!g) return;
+    const d = Math.hypot(live.x - cx, live.z - cz);
+    const inner = zone.radius * 0.5;
+    const t = THREE.MathUtils.clamp((d - inner) / 55, 0, 1);
+    g.scale.setScalar(t);
+    g.visible = t > 0.02;
+  });
+
+  return (
+    // Anchored at the zone centre, so shrinking scales the label in place
+    // rather than dragging it toward the world origin.
+    <group ref={ref} position={[cx, 0, cz]}>
+      {/* Billboarded, so the label never reads mirrored from behind. */}
+      <Billboard position={[0, 12, 0]}>
+        <Text
+          fontSize={4.2}
+          color="#2d2419"
+          outlineWidth={0.12}
+          outlineColor="#f3ead9"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={40}
+        >
+          {zone.label}
+        </Text>
+      </Billboard>
+      <Billboard position={[0, 8.6, 0]}>
+        <Text
+          fontSize={1.5}
+          color="#4a3d2b"
+          outlineWidth={0.05}
+          outlineColor="#f3ead9"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={44}
+        >
+          {zone.sublabel}
+        </Text>
+      </Billboard>
+    </group>
+  );
+}
 
 function ZoneBuild({ zone }: { zone: Zone }) {
   const [cx, cz] = zone.center;
@@ -412,13 +655,23 @@ function ZoneBuild({ zone }: { zone: Zone }) {
 
   return (
     <group>
-      {/* platform */}
+      {/* Platform, as two nested steps: a single slab meets the ground on a
+          hard straight line and reads as a placeholder block. */}
       <mesh
-        position={[cx, 0.15, cz]}
+        position={[cx, 0.09, cz]}
+        geometry={geoBox}
+        material={zone.style === "pavilion" ? matGhost : matRubble}
+        scale={[zone.radius * 2.16, 0.18, zone.radius * 2.16]}
+        receiveShadow
+        castShadow
+      />
+      <mesh
+        position={[cx, 0.26, cz]}
         geometry={geoBox}
         material={zone.style === "pavilion" ? matGhost : matStoneDark}
-        scale={[zone.radius * 2, 0.3, zone.radius * 2]}
+        scale={[zone.radius * 2, 0.34, zone.radius * 2]}
         receiveShadow
+        castShadow
       />
 
       {zone.style === "roman" &&
@@ -486,33 +739,7 @@ function ZoneBuild({ zone }: { zone: Zone }) {
           />
         ))}
 
-      {/* Billboarded, so the label never reads mirrored from behind. */}
-      <Billboard position={[cx, 12, cz]}>
-        <Text
-          fontSize={4.2}
-          color="#2d2419"
-          outlineWidth={0.12}
-          outlineColor="#f3ead9"
-          anchorX="center"
-          anchorY="middle"
-          maxWidth={40}
-        >
-          {zone.label}
-        </Text>
-      </Billboard>
-      <Billboard position={[cx, 8.6, cz]}>
-        <Text
-          fontSize={1.5}
-          color="#4a3d2b"
-          outlineWidth={0.05}
-          outlineColor="#f3ead9"
-          anchorX="center"
-          anchorY="middle"
-          maxWidth={44}
-        >
-          {zone.sublabel}
-        </Text>
-      </Billboard>
+      <ZoneLabel zone={zone} />
     </group>
   );
 }
@@ -645,7 +872,17 @@ function LocalModel({ uid, reduceMotion }: { uid: string; reduceMotion: boolean 
  * A framed card carrying the Sketchfab thumbnail, for any model without a
  * local .glb. Sized from the image's own aspect ratio once it has decoded.
  */
-function ThumbCard({ url }: { url: string }) {
+function ThumbCard({
+  url,
+  base,
+  fan,
+  tilt,
+}: {
+  url: string;
+  base: number;
+  fan: number;
+  tilt: number;
+}) {
   const [state, setState] = useState<{ tex: THREE.Texture; ar: number } | null>(
     null
   );
@@ -677,11 +914,11 @@ function ThumbCard({ url }: { url: string }) {
     };
   }, [url]);
 
-  const h = 1.5;
+  const h = 1.25;
   const w = h * (state?.ar ?? 16 / 9);
 
   return (
-    <group position={[0, 2.5, 0]}>
+    <group position={[0, base + 1.35, 0]} rotation={[tilt, fan, 0]}>
       {/* frame */}
       <mesh
         geometry={geoBox}
@@ -690,17 +927,23 @@ function ThumbCard({ url }: { url: string }) {
         castShadow
         receiveShadow
       />
+      {/* Tinted: Sketchfab thumbnails sit on pure white, and a row of pure
+          white rectangles reads as floating UI rather than as objects. */}
       {state && (
         <mesh position={[0, 0, 0.05]} geometry={geoPlane} scale={[w, h, 1]}>
-          <meshBasicMaterial map={state.tex} toneMapped={false} />
+          <meshBasicMaterial
+            map={state.tex}
+            color="#e3d8c2"
+            toneMapped={false}
+          />
         </mesh>
       )}
       {/* stem down to the plinth */}
       <mesh
-        position={[0, -h / 2 - 0.5, 0]}
+        position={[0, -h / 2 - 0.45, 0]}
         geometry={geoBox}
         material={matFrame}
-        scale={[0.1, 1.05, 0.1]}
+        scale={[0.1, 0.95, 0.1]}
         castShadow
       />
     </group>
@@ -718,12 +961,15 @@ function Artifact({
   showThumb: boolean;
   reduceMotion: boolean;
 }) {
+  const j = useMemo(() => jitter(model.uid), [model.uid]);
+
   return (
-    <group position={model.pos} rotation={[0, model.facing, 0]}>
+    <group position={model.pos} rotation={[0, model.facing + j.spin, 0]}>
       <mesh
-        position={[0, 0.5, 0]}
+        position={[0, j.height / 2, 0]}
         geometry={geoPlinth}
         material={matPlinth}
+        scale={[1, j.height, 1]}
         castShadow
         receiveShadow
       />
@@ -737,19 +983,29 @@ function Artifact({
       {model.hasLocal ? (
         <Suspense
           fallback={
-            <mesh position={[0, 2, 0]} geometry={geoBox} material={matGhost} scale={[1.2, 2, 1.2]} />
+            <mesh
+              position={[0, j.height + 1, 0]}
+              geometry={geoBox}
+              material={matGhost}
+              scale={[1.2, 2, 1.2]}
+            />
           }
         >
-          <group position={[0, 1, 0]}>
+          <group position={[0, j.height, 0]}>
             <LocalModel uid={model.uid} reduceMotion={reduceMotion} />
           </group>
         </Suspense>
       ) : showThumb && model.thumbnail ? (
-        <ThumbCard url={model.thumbnail} />
+        <ThumbCard
+          url={model.thumbnail}
+          base={j.height}
+          fan={j.fan}
+          tilt={j.tilt}
+        />
       ) : (
         // Too far away to be worth a thumbnail download: a marker post only.
         <mesh
-          position={[0, 2.1, 0]}
+          position={[0, j.height + 1.1, 0]}
           geometry={geoBox}
           material={matGhost}
           scale={[0.9, 2.2, 0.35]}
@@ -883,11 +1139,15 @@ export function WorldCanvas({
       }}
     >
       <GradientSky />
-      {/* Low fill so the shadow sides read as stone, not as holes. */}
-      <hemisphereLight args={["#e8ddc4", "#6b5637", 0.42]} />
+      {/* Fill. Without enough of this the sun-facing sides look fine and every
+          shaded side reads as a black cut-out, which is worse than no sun. */}
+      <hemisphereLight args={["#dfe6f0", "#8a7352", 0.9]} />
+      <ambientLight intensity={0.35} color="#f3e6cd" />
       <SunLight />
 
       <Ground />
+
+      <Scenery />
 
       <Signpost />
 

@@ -203,7 +203,9 @@ function geomKey(m: ModelRecord) {
 
 /**
  * Lay a zone's artifacts out in concentric arcs facing the zone entrance
- * (the side nearest the world origin), roughly 4 units apart.
+ * (the side nearest the world origin). Spacing is deliberately tight, about
+ * 3.4 units, so a zone reads as a cluster you are standing inside rather than
+ * as scattered signposts in a field.
  */
 function layout(
   zone: Zone,
@@ -215,9 +217,9 @@ function layout(
   let placed = 0;
   let ring = 0;
   while (placed < count && ring < 14) {
-    const r = 9 + ring * 6.5;
+    const r = 7 + ring * 5.2;
     const span = Math.PI * 1.45;
-    const perRing = Math.max(4, Math.floor((span * r) / 4.5));
+    const perRing = Math.max(4, Math.floor((span * r) / 3.4));
     const n = Math.min(perRing, count - placed);
     for (let i = 0; i < n; i++) {
       const t = n === 1 ? 0.5 : i / (n - 1);
