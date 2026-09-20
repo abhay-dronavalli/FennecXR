@@ -249,6 +249,125 @@ a { color: inherit; }
 .scene-fallback h1 { max-width: 18ch; margin: 0; font: 400 clamp(2.5rem, 7vw, 5rem)/1 Georgia, serif; }
 .scene-fallback p { max-width: 35rem; }
 
+/* ── Music Player ──────────────────────────────────────────────────────── */
+
+/*
+  Layout: fixed top-right. Flex row – [ribbon][vinyl].
+  Ribbon slides LEFT from behind the vinyl on hover.
+  Hover zone covers the full row so arrows stay reachable.
+*/
+.music-player {
+  position: fixed;
+  z-index: 5;
+  top: 1.1rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+/* ── Ribbon ── */
+.music-player__ribbon {
+  /* Clipping container: grows leftward as max-width opens */
+  max-width: 0;
+  overflow: hidden;
+  /* Pull the right edge 30px under the vinyl so ribbon appears from behind it */
+  margin-right: -30px;
+  z-index: 1;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.music-player--open .music-player__ribbon {
+  max-width: 310px;
+}
+
+.music-player__ribbon-content {
+  /* Fixed width so flex layout doesn't collapse during the slide */
+  width: 310px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Right padding covers the 30px tuck + a little breathing room */
+  padding: 0 38px 0 14px;
+  background: rgb(36 29 22 / 92%);
+  /* Left end styled as a ribbon banner: angled notch via clip-path */
+  clip-path: polygon(14px 0%, 100% 0%, 100% 100%, 14px 100%, 0% 50%);
+  /* Warm left-accent strip is drawn inside the clip, so use box-shadow trick */
+  box-shadow: inset 4px 0 0 var(--sky-warm);
+}
+
+.music-player__song {
+  flex: 1;
+  color: var(--sky-warm);
+  font-family: 'Amiri', Georgia, serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-player__arrow {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--paper);
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.75;
+  transition: opacity 0.12s, color 0.12s;
+}
+
+.music-player__arrow:hover {
+  opacity: 1;
+  color: var(--sky-warm);
+}
+
+/* ── Vinyl disc ── */
+.music-player__vinyl-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.music-player__vinyl {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 4px 28px rgb(36 29 22 / 65%);
+}
+
+/* Play/pause icon fades in on hover */
+.music-player__vinyl-hint {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgb(36 29 22 / 42%);
+  color: var(--sky-warm);
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.music-player--open .music-player__vinyl-hint {
+  opacity: 1;
+}
+
 @media (max-width: 720px) {
   .onboarding { grid-template-columns: 1.25rem 1fr 1.25rem; background: rgb(36 29 22 / 86%); }
   .onboarding__copy h1 { font-size: clamp(2.8rem, 14vw, 4.7rem); }

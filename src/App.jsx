@@ -5,6 +5,7 @@ import Onboarding from './ui/Onboarding.jsx'
 import InfoPanel from './ui/InfoPanel.jsx'
 import HelpBar from './ui/HelpBar.jsx'
 import LoadingStatus from './ui/LoadingStatus.jsx'
+import MusicPlayer from './ui/MusicPlayer.jsx'
 import TimeOfDayControl from './ui/TimeOfDayControl.jsx'
 import { useExperienceStore } from './store.js'
 
@@ -109,6 +110,7 @@ function Experience({ content }) {
           <span><strong>{nearestArtifact.title}</strong><small>Open artifact record</small></span>
         </button>
       )}
+      <MusicPlayer />
       <Onboarding />
       {activeArtifact && <InfoPanel artifact={activeArtifact} onClose={closeArtifact} />}
       <HelpBar />
