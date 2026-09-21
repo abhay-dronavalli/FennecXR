@@ -1,0 +1,156 @@
+[
+  {
+    "id": "corinthian-capital-byrsa",
+    "fullBytes": 463880,
+    "distantBytes": 287740,
+    "fullTriangles": 17945,
+    "distantTriangles": 15919
+  },
+  {
+    "id": "roman-column-base-byrsa",
+    "fullBytes": 497544,
+    "distantBytes": 87580,
+    "fullTriangles": 59554,
+    "distantTriangles": 8932
+  },
+  {
+    "id": "fluted-column-fragment-byrsa",
+    "fullBytes": 275064,
+    "distantBytes": 127176,
+    "fullTriangles": 9685,
+    "distantTriangles": 7853
+  },
+  {
+    "id": "roman-togatus-statue-byrsa",
+    "fullBytes": 314008,
+    "distantBytes": 128168,
+    "fullTriangles": 13898,
+    "distantTriangles": 7365
+  },
+  {
+    "id": "draped-statue-byrsa",
+    "fullBytes": 842636,
+    "distantBytes": 508376,
+    "fullTriangles": 16147,
+    "distantTriangles": 16068
+  },
+  {
+    "id": "reclining-figure-byrsa",
+    "fullBytes": 604160,
+    "distantBytes": 302460,
+    "fullTriangles": 22569,
+    "distantTriangles": 16382
+  },
+  {
+    "id": "inscribed-architectural-fragment-byrsa",
+    "fullBytes": 316112,
+    "distantBytes": 58628,
+    "fullTriangles": 4963,
+    "distantTriangles": 2742
+  },
+  {
+    "id": "roman-mosaic-villas",
+    "fullBytes": 297068,
+    "distantBytes": 33612,
+    "fullTriangles": 1778,
+    "distantTriangles": 617
+  },
+  {
+    "id": "male-torso-villas",
+    "fullBytes": 269308,
+    "distantBytes": 55704,
+    "fullTriangles": 6668,
+    "distantTriangles": 2536
+  },
+  {
+    "id": "statue-fragment-villas",
+    "fullBytes": 721376,
+    "distantBytes": 504508,
+    "fullTriangles": 17783,
+    "distantTriangles": 17704
+  },
+  {
+    "id": "tanit-stela-tophet",
+    "fullBytes": 258856,
+    "distantBytes": 40212,
+    "fullTriangles": 20316,
+    "distantTriangles": 3047
+  },
+  {
+    "id": "punic-stela-tophet",
+    "fullBytes": 551932,
+    "distantBytes": 92692,
+    "fullTriangles": 58400,
+    "distantTriangles": 8757
+  },
+  {
+    "id": "architectural-fragments-inscriptions",
+    "fullBytes": 415516,
+    "distantBytes": 47672,
+    "fullTriangles": 6385,
+    "distantTriangles": 1288
+  },
+  {
+    "id": "wooden-door-zawiya",
+    "fullBytes": 292852,
+    "distantBytes": 55852,
+    "fullTriangles": 6483,
+    "distantTriangles": 2637
+  },
+  {
+    "id": "zitouna-calligraphic-panel",
+    "fullBytes": 292784,
+    "distantBytes": 41640,
+    "fullTriangles": 11631,
+    "distantTriangles": 1743
+  },
+  {
+    "id": "traditional-well-medina-tunis",
+    "fullBytes": 311508,
+    "distantBytes": 85828,
+    "fullTriangles": 9401,
+    "distantTriangles": 3955
+  },
+  {
+    "id": "ornamental-mihrab-slimania",
+    "fullBytes": 432396,
+    "distantBytes": 269928,
+    "fullTriangles": 8069,
+    "distantTriangles": 8056
+  },
+  {
+    "id": "zaghouan-stone-basin",
+    "fullBytes": 471312,
+    "distantBytes": 233580,
+    "fullTriangles": 7023,
+    "distantTriangles": 7006
+  },
+  {
+    "id": "traditional-door-medina-tunis",
+    "fullBytes": 1111860,
+    "distantBytes": 905928,
+    "fullTriangles": 41851,
+    "distantTriangles": 40683
+  },
+  {
+    "id": "traditional-loom-tunis",
+    "fullBytes": 723996,
+    "distantBytes": 154812,
+    "fullTriangles": 93385,
+    "distantTriangles": 14004
+  },
+  {
+    "id": "sidi-sahbi-tilework",
+    "fullBytes": 368636,
+    "distantBytes": 58288,
+    "fullTriangles": 20019,
+    "distantTriangles": 3019
+  },
+  {
+    "id": "zaghouan-relief-fragment",
+    "fullBytes": 331448,
+    "distantBytes": 53100,
+    "fullTriangles": 30083,
+    "distantTriangles": 4510
+  }
+]

@@ -1,5 +1,7 @@
 import { useGLTF } from '@react-three/drei'
-import { Component, Suspense, useEffect, useMemo } from 'react'
+import { Component, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import { wantsFullDetail } from './modelDetail.js'
 import * as THREE from 'three'
 import { palette } from '../palette.js'
 import { useExperienceStore } from '../store.js'
@@ -63,16 +65,20 @@ function Placeholder({ artifact, onOpen }) {
   )
 }
 
-function ScannedModel({ url, fit = 1.8, onOpen }) {
+function ScannedModel({ url, fit = 1.8, anchor = 'center', bounds, onOpen }) {
+  const gl = useThree(state => state.gl)
   const { scene } = useGLTF(url)
   const clonedScene = useMemo(() => scene.clone(true), [scene])
   const normalization = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(clonedScene)
+    const box = bounds
+      ? new THREE.Box3(new THREE.Vector3(...bounds.min), new THREE.Vector3(...bounds.max))
+      : new THREE.Box3().setFromObject(clonedScene)
     const size = box.getSize(new THREE.Vector3())
     const center = box.getCenter(new THREE.Vector3())
+    if (anchor === 'base') center.y = box.min.y
     const longestSide = Math.max(size.x, size.y, size.z) || 1
     return { center, scale: fit / longestSide }
-  }, [clonedScene, fit])
+  }, [clonedScene, fit, anchor, bounds])
 
   useEffect(() => {
     clonedScene.traverse((object) => {
@@ -80,10 +86,12 @@ function ScannedModel({ url, fit = 1.8, onOpen }) {
       object.castShadow = true
       object.receiveShadow = true
     })
-  }, [clonedScene])
+    gl.shadowMap.needsUpdate = true
+    return () => { gl.shadowMap.needsUpdate = true }
+  }, [clonedScene, gl])
 
   return (
-    <group scale={normalization.scale}>
+    <group scale={normalization.scale} dispose={null}>
       <primitive
         object={clonedScene}
         position={normalization.center.clone().multiplyScalar(-1)}
@@ -93,6 +101,28 @@ function ScannedModel({ url, fit = 1.8, onOpen }) {
       />
     </group>
   )
+}
+
+function DistanceModel({ artifact, onOpen, placeholder }) {
+  const group = useRef()
+  const elapsed = useRef(0)
+  const point = useMemo(() => new THREE.Vector3(), [])
+  const [full, setFull] = useState(!artifact.modelLod)
+  useFrame(({ camera }, delta) => {
+    elapsed.current += delta
+    if (elapsed.current < 0.25 || !group.current || !artifact.modelLod) return
+    elapsed.current = 0
+    group.current.getWorldPosition(point)
+    const next = wantsFullDetail(camera.position.distanceTo(point), full)
+    if (next !== full) setFull(next)
+  })
+  const model = url => <ScannedModel url={url} fit={artifact.modelFit} anchor={artifact.modelAnchor} bounds={artifact.modelBounds} onOpen={onOpen} />
+  const distant = model(artifact.modelLod ?? artifact.model)
+  return <group ref={group}>
+    <Suspense fallback={placeholder}>
+      {full ? <Suspense fallback={distant}>{model(artifact.model)}</Suspense> : distant}
+    </Suspense>
+  </group>
 }
 
 class ModelBoundary extends Component {
@@ -130,9 +160,7 @@ export default function Artifact({ artifact }) {
       )}
       {artifact.model ? (
         <ModelBoundary fallback={placeholder}>
-          <Suspense fallback={placeholder}>
-            <ScannedModel url={artifact.model} fit={artifact.modelFit} onOpen={handleOpen} />
-          </Suspense>
+          <DistanceModel artifact={artifact} onOpen={handleOpen} placeholder={placeholder} />
         </ModelBoundary>
       ) : placeholder}
     </group>

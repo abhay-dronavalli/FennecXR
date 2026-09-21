@@ -10,7 +10,8 @@
     "dev": "vite",
     "server": "node server.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "models:lod": "node scripts/build-model-lods.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -27,6 +28,11 @@
   "devDependencies": {
     "@gltf-transform/cli": "^4.5.0",
     "@vitejs/plugin-react": "^5.0.3",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "@gltf-transform/core": "^4.5.0",
+    "@gltf-transform/extensions": "^4.5.0",
+    "@gltf-transform/functions": "^4.5.0",
+    "meshoptimizer": "^1.1.1",
+    "sharp": "^0.35.4"
   }
 }
