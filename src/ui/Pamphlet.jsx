@@ -56,7 +56,7 @@ function PreviewCanvas({ artifact }) {
       <directionalLight position={[3, 4, 2]} intensity={2.2} />
       <Suspense fallback={null}>
         {artifact.model
-          ? <RotatingModel key={artifact.id} url={artifact.model} fit={artifact.modelFit ?? 1.8} />
+          ? <RotatingModel key={artifact.id} url={artifact.modelLod ?? artifact.model} fit={artifact.modelFit ?? 1.8} />
           : <RotatingPlaceholder key={artifact.id} type={artifact.placeholder} />}
       </Suspense>
     </Canvas>
@@ -173,12 +173,14 @@ export default function Pamphlet({ content, archiveDb }) {
   const handleTeleport = (artifact) => {
     if (!artifact.position) return
     const [x, y, z] = artifact.position
+    const focusY = y + (artifact.focusHeight ?? 0)
+    const center = content.zones.find(zone => zone.id === artifact.zone)?.center ?? [0, 0, 0]
     // Temple-zone artifacts are rendered inside a group rotated by Math.PI,
     // so we must apply the same 180° rotation to get the real world position.
     if (artifact.zone === 'temple') {
-      setTeleportTarget([-x, y, -z])
+      setTeleportTarget([-x, focusY, -z, center[0], center[2]])
     } else {
-      setTeleportTarget([x, y, z])
+      setTeleportTarget([x, focusY, z, center[0], center[2]])
     }
     setPamphletOpen(false)
     setTimeout(() => {

@@ -114,14 +114,13 @@ a { color: inherit; }
 .resume-prompt {
   position: fixed;
   z-index: 8;
-  top: 50%;
-  left: 50%;
+  bottom: 5.5rem;
+  left: 1.5rem;
   display: grid;
   gap: 0.2rem;
   border: 1px solid var(--hud-border);
   border-radius: 1.35rem;
   padding: 0.8rem 1rem;
-  transform: translate(-50%, -50%);
   background: var(--hud);
   backdrop-filter: blur(16px) saturate(120%);
   color: var(--paper);
@@ -780,4 +779,15 @@ a { color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* Named orientation points make both architectural studies easy to discover. */
+.scene-places { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.65rem; pointer-events: auto; }
+.scene-places button { padding: 0.35rem 0.55rem; border: 1px solid #ffffff50; border-radius: 5px; background: #ffffff12; color: inherit; font: inherit; font-size: 0.75rem; cursor: pointer; }
+.scene-places button:hover { background: #ffffff2b; }
+.scene-places button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+
+@media (max-width: 720px) {
+  .site-mark { max-width: calc(100vw - 8rem); }
+  .resume-prompt { left: 0.75rem; bottom: 6rem; padding: 0.6rem 0.75rem; }
 }

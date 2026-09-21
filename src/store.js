@@ -21,6 +21,8 @@ export const useExperienceStore = create((set) => ({
   toggleReducedMotion: () => set((state) => ({ reducedMotion: !state.reducedMotion })),
   pamphletOpen: false,
   setPamphletOpen: (v) => set({ pamphletOpen: v }),
+  viewpoint: null,
+  setViewpoint: (viewpoint) => set({ viewpoint }),
   teleportTarget: null,
   setTeleportTarget: (pos) => set({ teleportTarget: pos }),
   savedCameraPos: null,

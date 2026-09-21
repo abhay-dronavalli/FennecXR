@@ -50,6 +50,7 @@ function Experience({ content, archiveDb }) {
   const setActiveArtifact = useExperienceStore((state) => state.setActiveArtifact)
   const nearestArtifact = useExperienceStore((state) => state.nearestArtifact)
   const hasEntered      = useExperienceStore((state) => state.hasEntered)
+  const setViewpoint = useExperienceStore((state) => state.setViewpoint)
   const currentZone     = useExperienceStore((state) => state.currentZone)
   const cycleTimeOfDay  = useExperienceStore((state) => state.cycleTimeOfDay)
   const pamphletOpen    = useExperienceStore((state) => state.pamphletOpen)
@@ -104,6 +105,12 @@ function Experience({ content, archiveDb }) {
         <header className="site-mark" aria-label="Carthage Underfoot">
           <span className="site-mark__title">Carthage Underfoot</span>
           <span className="site-mark__place">{zone.name}</span>
+          {hasEntered && <nav className="scene-places" aria-label="Explore the architecture">
+            <button onClick={() => setViewpoint({ position: [0, 1.7, -12], target: [0, 2.4, 1] })}>Roman precinct</button>
+            <button onClick={() => setViewpoint({ position: [0, 1.7, -16.8], target: [0, 3, -26] })}>Tunisian court</button>
+            <button onClick={() => setViewpoint({ position: [0, 1.74, 11], target: [0, 2, 24] })}>Garden</button>
+            <button onClick={() => setViewpoint({ position: [36, 29, 34], target: [0, 1, -6] })}>Overview</button>
+          </nav>}
         </header>
       )}
       {!viewerArtifact && !hudHidden && <TimeOfDayControl />}
