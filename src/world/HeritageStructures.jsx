@@ -1,86 +1,94 @@
+import { useMemo, useEffect } from 'react'
+import { architecturalBox, surfaces } from './materials.js'
 import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { palette } from '../palette.js'
 import { useExperienceStore } from '../store.js'
 
-function createPlasterTexture() {
-  const size = 64
-  const data = new Uint8Array(size * size * 4)
-
-  for (let y = 0; y < size; y += 1) {
-    for (let x = 0; x < size; x += 1) {
-      const index = (y * size + x) * 4
-      const grain = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453
-      const noise = grain - Math.floor(grain)
-      const broadVariation = Math.sin(x * 0.22) * 3 + Math.cos(y * 0.19) * 3
-      const value = Math.max(214, Math.min(244, 230 + (noise - 0.5) * 14 + broadVariation))
-      data[index] = value
-      data[index + 1] = value
-      data[index + 2] = value
-      data[index + 3] = 255
-    }
-  }
-
-  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
-  texture.colorSpace = THREE.SRGBColorSpace
-  texture.wrapS = THREE.RepeatWrapping
-  texture.wrapT = THREE.RepeatWrapping
-  texture.repeat.set(3, 2)
-  texture.minFilter = THREE.LinearMipmapLinearFilter
-  texture.magFilter = THREE.LinearFilter
-  texture.needsUpdate = true
-  return texture
-}
-
-const plasterTexture = createPlasterTexture()
-
-function Stone({ position, scale, rotation = [0, 0, 0], color = palette.stone, opacity = 1, textured = false }) {
+export function Stone({ position, scale, rotation = [0, 0, 0], color = palette.stone, opacity = 1, textured = false, surface = 'stone' }) {
+  const [width, height, depth] = scale
+  const geometry = useMemo(() => architecturalBox([width, height, depth]), [width, height, depth])
+  useEffect(() => () => geometry.dispose(), [geometry])
+  const finish = surfaces[textured ? 'plaster' : surface]
   return (
-    <mesh castShadow receiveShadow position={position} scale={scale} rotation={rotation}>
-      <boxGeometry />
-      <meshStandardMaterial
-        color={color}
-        flatShading
-        map={textured ? plasterTexture : null}
-        bumpMap={textured ? plasterTexture : null}
-        bumpScale={textured ? 0.018 : 0}
-        roughness={0.96}
-        transparent={opacity < 1}
-        opacity={opacity}
-      />
+    <mesh castShadow receiveShadow position={position} geometry={geometry} rotation={rotation}>
+      <meshStandardMaterial color={color} {...finish} bumpScale={textured ? 0.025 : 0.018}
+        roughness={surface === 'roof' ? 0.56 : 0.92} transparent={opacity < 1} opacity={opacity} />
     </mesh>
   )
 }
 
 function PlasterWall(props) {
-  return <Stone {...props} textured />
+  return <Stone color={palette.tileWhite} {...props} textured />
 }
 
 function Column({ position, height = 2.2, radius = 0.16, color = palette.stone }) {
   return (
     <group position={position}>
-      <mesh castShadow position={[0, height / 2, 0]}>
-        <cylinderGeometry args={[radius, radius * 1.12, height, 8]} />
+      <Stone position={[0, 0.08, 0]} scale={[radius * 3, 0.16, radius * 3]} />
+      {[0.2, height - 0.06].map(y => (
+        <mesh key={y} castShadow receiveShadow position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[radius * 1.1, radius * 0.22, 8, 24]} />
+          <meshStandardMaterial color={color} {...surfaces.stone} roughness={0.88} />
+        </mesh>
+      ))}
+      <mesh castShadow receiveShadow position={[0, height / 2, 0]}>
+        <cylinderGeometry args={[radius, radius * 1.12, height, 24]} />
         <meshStandardMaterial color={color} flatShading roughness={0.96} />
       </mesh>
       <mesh castShadow position={[0, height + 0.1, 0]}>
-        <cylinderGeometry args={[radius * 1.5, radius * 1.25, 0.2, 8]} />
+        <cylinderGeometry args={[radius * 1.5, radius * 1.25, 0.2, 24]} />
         <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.96} />
       </mesh>
     </group>
   )
 }
 
-function Arch({ position, rotation = [0, 0, 0], width = 2.4, height = 2.5, depth = 0.42 }) {
-  const legHeight = height - width / 2
+// Voussoirs have flat faces and real depth. A slight horseshoe return is used
+// only in the interpretive prayer court, never applied to the Roman precinct.
+export function Arch({ position, rotation = [0, 0, 0], width = 2.4, height = 2.5, depth = 0.42, infill = false }) {
+  const radius = width / 2
+  const spring = height - radius
+  const legHeight = spring - radius * Math.sin(Math.PI * 0.08)
+  const legX = radius * Math.cos(Math.PI * 0.08) + 0.14
+  const stones = useMemo(() => Array.from({ length: 15 }, (_, i) => {
+    const start = -Math.PI * 0.08 + i * Math.PI * 1.16 / 15 + 0.003
+    const end = -Math.PI * 0.08 + (i + 1) * Math.PI * 1.16 / 15 - 0.003
+    const shape = new THREE.Shape()
+    shape.absarc(0, 0, radius + 0.28, start, end, false)
+    shape.absarc(0, 0, radius, end, start, true)
+    shape.closePath()
+    return shape
+  }), [radius])
+  const surround = useMemo(() => {
+    const r = radius + 0.28
+    const a = Math.PI * 0.08
+    const x = r * Math.cos(a), y = spring - r * Math.sin(a)
+    const shape = new THREE.Shape()
+    shape.moveTo(-2, 0)
+    shape.lineTo(-x, 0)
+    shape.lineTo(-x, y)
+    shape.absarc(0, spring, r, Math.PI + a, -a, true)
+    shape.lineTo(x, 0)
+    shape.lineTo(2, 0)
+    shape.lineTo(2, 3.32)
+    shape.lineTo(-2, 3.32)
+    shape.closePath()
+    return shape
+  }, [radius, spring])
   return (
     <group position={position} rotation={rotation}>
-      <Stone position={[-width / 2, legHeight / 2, 0]} scale={[0.34, legHeight, depth]} />
-      <Stone position={[width / 2, legHeight / 2, 0]} scale={[0.34, legHeight, depth]} />
-      <mesh castShadow position={[0, legHeight, 0]}>
-        <torusGeometry args={[width / 2, 0.18, 4, 12, Math.PI]} />
-        <meshStandardMaterial color={palette.stone} flatShading roughness={0.96} />
-      </mesh>
+      {infill && <mesh castShadow receiveShadow position={[0, 0, -depth / 2]}>
+        <extrudeGeometry args={[surround, { depth: depth - 0.02, bevelEnabled: false, curveSegments: 24 }]} />
+        <meshStandardMaterial color={palette.tileWhite} {...surfaces.plaster} roughness={0.95} />
+      </mesh>}
+      {[-1, 1].map(side => <Stone key={side} position={[side * legX, legHeight / 2, 0]} scale={[0.32, legHeight, depth]} />)}
+      {stones.map((shape, i) => (
+        <mesh key={i} castShadow receiveShadow position={[0, spring, -depth / 2]}>
+          <extrudeGeometry args={[shape, { depth, bevelEnabled: true, bevelSize: 0.008, bevelThickness: 0.008, bevelSegments: 1, steps: 1, curveSegments: 4 }]} />
+          <meshStandardMaterial color={i % 3 === 0 ? palette.stoneDark : palette.stone} {...surfaces.stone} bumpScale={0.012} roughness={0.9} />
+        </mesh>
+      ))}
     </group>
   )
 }
@@ -118,23 +126,22 @@ function DecorativeBand({ position, width, count = 18 }) {
 function Minaret({ position }) {
   return (
     <group position={position}>
-      <Stone position={[0, 3.6, 0]} scale={[2.3, 7.2, 2.3]} color={palette.stone} />
-      {[1.1, 4.8, 7.15].map((y) => (
-        <Stone key={y} position={[0, y, 0]} scale={[2.55, 0.16, 2.55]} color={palette.stoneDark} />
+      {/* Three diminishing square stages: Kairouan-inspired, not a replica. */}
+      <Stone position={[0, 3.4, 0]} scale={[2.5, 6.8, 2.5]} surface="masonry" />
+      <Stone position={[0, 7.4, 0]} scale={[1.72, 1.25, 1.72]} surface="masonry" />
+      <Stone position={[0, 8.48, 0]} scale={[1.04, 0.92, 1.04]} surface="masonry" />
+      {[[6.8, 2.7], [8.04, 1.9], [8.95, 1.18]].map(([y, w]) => (
+        <Stone key={y} position={[0, y, 0]} scale={[w, 0.16, w]} color={palette.stoneDark} />
       ))}
-      <DecorativeBand position={[0, 5.85, 1.18]} width={2.15} count={7} />
-      {[3.45, 6.55].map((y) => (
-        <group key={y}>
-          <Stone position={[0, y, 1.18]} scale={[0.38, 0.85, 0.08]} color={palette.ink} />
-          <Stone position={[-1.18, y, 0]} scale={[0.08, 0.85, 0.38]} color={palette.ink} />
+      {[0, 1, 2, 3].map(side => (
+        <group key={side} rotation={[0, side * Math.PI / 2, 0]}>
+          {[2.7, 5.1].map(y => <Stone key={y} position={[0, y, 1.258]} scale={[0.2, 0.66, 0.035]} color={palette.ink} />)}
+          {[-0.98, -0.49, 0, 0.49, 0.98].map(x => <Stone key={x} position={[x, 7.02, 1.14]} scale={[0.24, 0.3, 0.24]} />)}
         </group>
       ))}
-      <Stone position={[0, 7.65, 0]} scale={[2.85, 0.55, 2.85]} color={palette.stoneDark} />
-      <Stone position={[0, 8.35, 0]} scale={[1.55, 1.25, 1.55]} color={palette.stone} />
-      <Stone position={[0, 9.05, 0]} scale={[2.05, 0.18, 2.05]} color={palette.stoneDark} />
-      <mesh castShadow position={[0, 9.55, 0]}>
-        <coneGeometry args={[0.65, 0.9, 4]} />
-        <meshStandardMaterial color={palette.tileBlue} flatShading roughness={0.9} />
+      <mesh castShadow receiveShadow position={[0, 9.01, 0]}>
+        <sphereGeometry args={[0.54, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color={palette.tileWhite} {...surfaces.plaster} bumpScale={0.018} roughness={0.9} />
       </mesh>
     </group>
   )
@@ -144,14 +151,26 @@ function Lantern({ position, intensity }) {
   return (
     <group position={position}>
       <mesh>
-        <octahedronGeometry args={[0.14, 0]} />
+        <cylinderGeometry args={[0.09, 0.09, 0.24, 8]} />
         <meshStandardMaterial
           color="#ffd89a"
           emissive="#ff9f45"
-          emissiveIntensity={4}
+          emissiveIntensity={1.6}
           roughness={0.5}
         />
       </mesh>
+      {[-0.17, 0.17].map(y => (
+        <mesh key={y} castShadow position={[0, y, 0]}>
+          <cylinderGeometry args={[0.17, 0.17, 0.05, 8]} />
+          <meshStandardMaterial color="#40382c" metalness={0.55} roughness={0.6} />
+        </mesh>
+      ))}
+      {[0, 1, 2, 3].map(i => (
+        <mesh key={i} position={[Math.cos(i * Math.PI / 2) * 0.12, 0, Math.sin(i * Math.PI / 2) * 0.12]}>
+          <boxGeometry args={[0.018, 0.34, 0.018]} />
+          <meshStandardMaterial color="#40382c" metalness={0.55} roughness={0.6} />
+        </mesh>
+      ))}
       <pointLight color="#ffbd72" intensity={intensity} distance={7} decay={2} />
     </group>
   )
@@ -167,41 +186,23 @@ function ExteriorLantern({ position, intensity }) {
   )
 }
 
-function PrayerHallRoof({ lanternIntensity }) {
-  const roofCourses = [-29.75, -29.2, -27.7, -27.15]
+function PrayerHallRoof() {
   return (
     <group>
       <Stone position={[0, 3.32, -28.4]} scale={[21.7, 0.22, 3.4]} color={palette.tileWhite} />
-      <mesh castShadow position={[0, 3.93, -27.83]} rotation={[0.42, 0, 0]}>
-        <boxGeometry args={[21.9, 0.18, 2.75]} />
-        <meshStandardMaterial color={palette.tileBlue} flatShading roughness={0.9} />
-      </mesh>
-      <mesh castShadow position={[0, 3.93, -29.07]} rotation={[-0.42, 0, 0]}>
-        <boxGeometry args={[21.9, 0.18, 2.75]} />
-        <meshStandardMaterial color={palette.tileBlue} flatShading roughness={0.9} />
-      </mesh>
-      {roofCourses.map((z) => (
-        <Stone
-          key={z}
-          position={[0, 4.48 - Math.abs(z + 28.45) * 0.43, z]}
-          scale={[22.1, 0.06, 0.09]}
-          color={palette.stoneDark}
-        />
+      {[-1, 1].map(side => (
+        <Stone key={side} position={[0, 3.73, -28.4 + side * 0.86]} rotation={[side * 0.36, 0, 0]}
+          scale={[21.9, 0.16, 1.84]} color={palette.roofGreen} surface="roof" />
       ))}
-      <Stone position={[0, 4.5, -28.45]} scale={[22.3, 0.18, 0.3]} color={palette.stoneDark} />
-      <mesh castShadow position={[0, 4.42, -28.45]}>
-        <cylinderGeometry args={[1.5, 1.72, 0.5, 8]} />
-        <meshStandardMaterial color={palette.stoneDark} flatShading roughness={0.95} />
+      <Stone position={[0, 4.1, -28.4]} scale={[22, 0.16, 0.24]} color={palette.roofGreen} surface="roof" />
+      <mesh castShadow receiveShadow position={[0, 4.32, -28.4]}>
+        <cylinderGeometry args={[1.25, 1.4, 0.65, 16]} />
+        <meshStandardMaterial color={palette.stone} {...surfaces.stone} roughness={0.9} />
       </mesh>
-      <mesh castShadow position={[0, 4.64, -28.45]}>
-        <sphereGeometry args={[1.5, 12, 5, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
+      <mesh castShadow receiveShadow position={[0, 4.63, -28.4]}>
+        <sphereGeometry args={[1.26, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color={palette.tileWhite} {...surfaces.plaster} bumpScale={0.018} roughness={0.94} />
       </mesh>
-      <mesh castShadow position={[0, 6.16, -28.45]}>
-        <sphereGeometry args={[0.11, 8, 4]} />
-        <meshStandardMaterial color={palette.tileBlue} roughness={0.8} />
-      </mesh>
-      {[-6, 0, 6].map((x) => <Lantern key={x} position={[x, 2.7, -28.05]} intensity={lanternIntensity} />)}
     </group>
   )
 }
@@ -219,7 +220,7 @@ function CourtyardGalleryRoof({ lanternIntensity }) {
           <Stone
             position={[side * 9.65, 3.24, -24.55]}
             scale={[3.45, 0.14, 9.05]}
-            color={palette.tileBlue}
+            color={palette.roofGreen} surface="roof"
           />
           {[-21.6, -24.5].map((z) => (
             <Column key={z} position={[side * 8.02, 0.08, z]} height={2.75} radius={0.13} />
@@ -256,7 +257,7 @@ function CarthageTemplePrecinct({ lanternIntensity }) {
   return (
     <group rotation={[0, Math.PI, 0]}>
       <Stone position={[0, 0.22, -1]} scale={[19, 0.44, 16]} color={palette.stoneDark} />
-      <Stone position={[0, 0.47, -1.2]} scale={[17.8, 0.22, 14.8]} color={palette.stone} />
+      <Stone position={[0, 0.47, -1.2]} scale={[17.8, 0.22, 14.8]} color={palette.stone} surface="paving" />
       <Stone position={[0, 0.14, 7.55]} scale={[19.8, 0.28, 1.8]} color={palette.stoneDark} />
       <Stone position={[0, 0.28, 6.25]} scale={[18.8, 0.3, 1.4]} color={palette.stone} />
       <Stone position={[0, 0.42, 5.15]} scale={[17.8, 0.3, 1.2]} color={palette.sand} />
@@ -265,6 +266,14 @@ function CarthageTemplePrecinct({ lanternIntensity }) {
       <Stone position={[-7.65, 2.15, -4.5]} scale={[0.5, 4.1, 8.4]} color={palette.stone} />
       <Stone position={[7.65, 2.15, -4.5]} scale={[0.5, 4.1, 8.4]} color={palette.stone} />
       <Stone position={[0, 4.35, -3.85]} scale={[16.3, 0.32, 10.1]} color={palette.stoneDark} />
+      {[-1, 1].map(side => <Stone key={`roof-${side}`} position={[side * 4.15, 6.3, -3.95]}
+        rotation={[0, 0, -side * Math.atan2(2.65, 8.3)]} scale={[8.85, 0.16, 10.8]} color={palette.terracotta} surface="roof" />)}
+      <Stone position={[0, 7.65, -3.95]} scale={[0.24, 0.18, 10.85]} color={palette.terracotta} />
+      <Stone position={[0, 4.72, -8.8]} scale={[16.9, 0.48, 0.55]} color={palette.stoneDark} />
+      <mesh castShadow receiveShadow position={[0, 4.95, -9.03]}>
+        <extrudeGeometry args={[pedimentShape, { depth: 0.4, bevelEnabled: false }]} />
+        <meshStandardMaterial color={palette.stone} {...surfaces.stone} roughness={0.94} />
+      </mesh>
 
       {backBays.map((x) => (
         <group key={x}>
@@ -290,9 +299,10 @@ function CarthageTemplePrecinct({ lanternIntensity }) {
         <ExteriorLantern key={`temple-exterior-${x}`} position={[x, 0.45, 4.8]} intensity={lanternIntensity} />
       ))}
 
-      <mesh castShadow position={[-6, 2.02, 1]}>
-        <cylinderGeometry args={[0.36, 0.43, 3.65, 12]} />
-        <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
+      {/* The scanned Byrsa base seats this shaft at y=1.10, above the podium. */}
+      <mesh castShadow receiveShadow position={[-6, 2.465, 1]}>
+        <cylinderGeometry args={[0.36, 0.43, 2.77, 32]} />
+        <meshStandardMaterial color={palette.stone} {...surfaces.stone} roughness={0.95} />
       </mesh>
       <mesh castShadow position={[-3, 3.25, 1]}>
         <cylinderGeometry args={[0.34, 0.38, 1.55, 12]} />
@@ -303,6 +313,7 @@ function CarthageTemplePrecinct({ lanternIntensity }) {
         <meshStandardMaterial color={palette.stone} flatShading roughness={0.95} />
       </mesh>
       <Column position={[6, 0.45, 1]} height={3.75} radius={0.36} />
+      {Array.from({ length: 27 }, (_, i) => <Stone key={`dentil-${i}`} position={[-7.8 + i * 0.6, 4.46, 1.44]} scale={[0.24, 0.15, 0.22]} color={palette.stone} />)}
       <Stone position={[0, 4.72, 1]} scale={[16.9, 0.48, 1.05]} color={palette.stoneDark} />
       <mesh castShadow receiveShadow position={[0, 4.95, 0.47]}>
         <extrudeGeometry args={[pedimentShape, { depth: 0.52, bevelEnabled: false }]} />
@@ -322,7 +333,7 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
   return (
     <group>
       <Stone position={[0, 0.04, -25]} scale={[25, 0.08, 10]} color={palette.stone} />
-      <Stone position={[0, 0.07, -25]} scale={[22, 0.05, 8.2]} color={palette.sand} />
+      <Stone position={[0, 0.07, -25]} scale={[22, 0.05, 8.2]} color={palette.sand} surface="paving" />
       <FloorInlay position={[0, 0.11, -24.55]} width={20.5} depth={7.4} />
 
       <PlasterWall position={[0, 1.55, -29.25]} scale={[24, 3.1, 0.46]} />
@@ -331,7 +342,7 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
       <Stone position={[0, 3.75, -30.1]} scale={[24, 0.24, 2.2]} color={palette.stoneDark} />
       <Stone position={[5.8, 2.25, -29.02]} scale={[2.5, 1.65, 0.16]} color={palette.stoneDark} />
       <Stone position={[5.8, 3.17, -29]} scale={[3.1, 0.18, 0.22]} color={palette.stoneDark} />
-      <PrayerHallRoof lanternIntensity={lanternIntensity} />
+      <PrayerHallRoof />
       <CourtyardGalleryRoof lanternIntensity={lanternIntensity} />
       <Minaret position={[9.4, 0, -29.1]} />
 
@@ -342,22 +353,21 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
       <PlasterWall position={[-11.25, 2.86, -24.5]} scale={[0.46, 0.28, 1.95]} />
       <PlasterWall position={[11.25, 2.86, -24.5]} scale={[0.46, 0.28, 1.95]} />
 
-      <Arch position={[0, 0, -20.1]} width={3.2} height={3.4} />
-      <PlasterWall position={[-7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
-      <PlasterWall position={[7.1, 1.7, -20.15]} scale={[10.8, 3.4, 0.46]} color={palette.stoneDark} />
-      <PlasterWall position={[-1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
-      <PlasterWall position={[1.48, 2.45, -20.14]} scale={[0.56, 1.35, 0.48]} color={palette.stoneDark} />
-      <PlasterWall position={[-0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
-      <PlasterWall position={[0.95, 3.06, -20.14]} scale={[1.35, 0.5, 0.48]} color={palette.stoneDark} />
+      <Arch position={[0, 0.08, -20.1]} width={3.2} height={3.2} infill />
+      <PlasterWall position={[-7.25, 1.7, -20.15]} scale={[10.5, 3.4, 0.46]} />
+      <PlasterWall position={[7.25, 1.7, -20.15]} scale={[10.5, 3.4, 0.46]} />
       <Stone position={[0, 3.55, -20.15]} scale={[25, 0.38, 0.72]} color={palette.stone} />
 
       <PlasterWall position={[-6.7, 1.25, -19.9]} scale={[3.2, 2.75, 0.18]} color={palette.stone} />
       <Arch position={[-6.7, 0.05, -19.68]} width={2.75} height={2.95} depth={0.2} />
-      <DecorativeBand position={[0, 2.72, -19.45]} width={24.4} count={54} />
-      <Stone position={[5.8, 0.48, -19.89]} scale={[9.8, 0.12, 0.09]} color={palette.stone} />
-      <Stone position={[5.8, 1.7, -19.89]} scale={[9.8, 0.08, 0.09]} color={palette.stone} />
+      {[-1, 1].map(side => <DecorativeBand key={side} position={[side * 7.1, 2.72, -19.87]} width={10.15} count={23} />)}
+      <Stone position={[6.6, 0.48, -19.89]} scale={[8.2, 0.12, 0.09]} color={palette.stone} />
+      <Stone position={[6.6, 1.7, -19.89]} scale={[8.2, 0.08, 0.09]} color={palette.stone} />
+      {/* Neutral backing supports the scanned Kairouan tilework without inventing its missing edges. */}
+      <Stone position={[-5.8, 1.62, -28.92]} scale={[3.5, 2.9, 0.1]} color={palette.tileWhite} />
 
       {porticoXs.map((x) => <Column key={x} position={[x, 0.08, -27.25]} height={2.5} radius={0.15} />)}
+      {[-6.65, -4, 4, 6.65].map(x => <Arch key={`arcade-${x}`} position={[x, 0.08, -27.25]} width={2.18} height={2.4} depth={0.32} />)}
       <Stone position={[0, 2.75, -27.25]} scale={[19, 0.3, 0.55]} color={palette.stone} />
       <Stone position={[0, 3.03, -27.8]} scale={[20.5, 0.22, 1.7]} color={palette.tileWhite} />
       {[-6, 0, 6].map((x) => (
@@ -381,7 +391,7 @@ function TunisiaPrayerCourt({ lanternIntensity }) {
 
 export default function HeritageStructures() {
   const timeOfDay = useExperienceStore((state) => state.timeOfDay)
-  const lanternIntensity = timeOfDay === 'night' ? 24 : timeOfDay === 'day' ? 6 : 14
+  const lanternIntensity = timeOfDay === 'night' ? 10 : timeOfDay === 'day' ? 0 : 3
 
   return (
     <group>
