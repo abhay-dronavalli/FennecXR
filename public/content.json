@@ -11,18 +11,66 @@
       "name": "Carthage Roman Temple Precinct",
       "shortName": "Roman temple",
       "blurb": "Roman scans from Byrsa Hill and the villas are embedded in an interpretive North African temple precinct. The arrangement is not a measured reconstruction.",
-      "spawn": [0, 1.7, -14],
-      "center": [0, 0, 1],
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "spawn": [
+        0,
+        1.7,
+        -14
+      ],
+      "center": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "tunisia-details",
       "name": "Tunisia Details Court",
       "shortName": "Details court",
       "blurb": "This separate study court presents downloaded Tanit XR scans from other Tunisian heritage sites. Their labels name their actual source places; they are not presented as finds from Carthage.",
-      "spawn": [0, 1.7, -21],
-      "center": [0, 0, -25],
-      "sources": [{ "label": "Tanit XR", "url": "https://tanitxr.org/" }]
+      "spawn": [
+        0,
+        1.7,
+        -21
+      ],
+      "center": [
+        0,
+        0,
+        -25
+      ],
+      "sources": [
+        {
+          "label": "Tanit XR",
+          "url": "https://tanitxr.org/"
+        }
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "Walled Heritage Garden",
+      "shortName": "Garden",
+      "blurb": "A modern garden display within ramparts inspired by Sousse. Scans retain their individual source places and periods.",
+      "spawn": [
+        0,
+        1.74,
+        11
+      ],
+      "center": [
+        0,
+        0,
+        16
+      ],
+      "sources": [
+        {
+          "label": "Sousse ramparts - Museum With No Frontiers",
+          "url": "https://islamicart.museumwnf.org/database_item.php?id=monuments;ISL;tn;Mon01;23;en"
+        }
+      ]
     }
   ],
   "artifacts": [
@@ -34,8 +82,16 @@
       "model": "/models/corinthian-capital.glb",
       "modelFit": 1.7,
       "embedUrl": null,
-      "position": [-6, 4.25, 1],
-      "rotation": [0, 0, 0],
+      "position": [
+        -6,
+        4.25,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 0.9,
       "placement": "ground",
       "placeholder": "capital",
@@ -48,7 +104,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": "https://skfb.ly/pIxPR",
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.17583799362182617,
+          0.6861859005386024,
+          -0.6269718011198314
+        ],
+        "max": [
+          0.47485101222991943,
+          1.1742771226471278,
+          -0.03442719082257384
+        ]
+      },
+      "modelLod": "/models/lod/corinthian-capital.glb"
     },
     {
       "id": "roman-column-byrsa",
@@ -56,8 +130,16 @@
       "title": "Roman Column",
       "findSite": "Byrsa Hill, Carthage",
       "model": null,
-      "position": [0, 1.6, 1],
-      "rotation": [0, 0.2, 0],
+      "position": [
+        0,
+        1.6,
+        1
+      ],
+      "rotation": [
+        0,
+        0.2,
+        0
+      ],
       "scale": 1.2,
       "placement": "ground",
       "placeholder": "column",
@@ -69,28 +151,66 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "roman-column-base-byrsa",
       "zone": "temple",
       "title": "Roman Column Base",
       "findSite": "Byrsa Hill, Carthage",
-      "model": null,
-      "position": [3, 0.55, 1],
-      "rotation": [0, -0.35, 0],
+      "model": "/models/roman-column-base.glb",
+      "position": [
+        -6,
+        0.58,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 1,
       "placement": "ground",
       "placeholder": "base",
       "shortLabel": "The base of a column",
       "description": "The Tanit XR archive identifies this scan as a Roman column base from Byrsa Hill. Further description is being verified.",
-      "context": "The find-site label comes from the archive entry.",
+      "context": "Forms the base of the temple's front pillar beneath an interpretive shaft and a separately scanned Corinthian capital.",
       "threat": "The archive-specific threat statement is still being verified.",
-      "interpretation": "Its position in this digital landscape is interpretive.",
-      "scannedBy": "Credit verification in progress",
-      "modelUrl": null,
-      "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "interpretation": "The base and capital are separate Byrsa Hill scans. Their assembly and display scale are interpretive, not evidence that they belonged to the same ancient column.",
+      "scannedBy": "Tanit XR",
+      "modelUrl": "https://sketchfab.com/3d-models/7d8ccdd72462444ca9db291e82f1bf5a",
+      "license": "CC BY-NC-SA 4.0 - Tanit XR. Geometry simplified and textures compressed for this experience.",
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/roman-column-base-byrsa-hill-carthage/"
+        },
+        {
+          "label": "CC BY-NC-SA 4.0",
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        }
+      ],
+      "modelFit": 1.7,
+      "modelAnchor": "base",
+      "focusHeight": 0.27,
+      "modelBounds": {
+        "min": [
+          -0.9556599855422974,
+          -0.0035154220381677925,
+          -0.9430234025873108
+        ],
+        "max": [
+          0.9086499810218811,
+          0.5773354476982653,
+          0.8923834155954284
+        ]
+      },
+      "modelLod": "/models/lod/roman-column-base.glb"
     },
     {
       "id": "fluted-column-fragment-byrsa",
@@ -99,8 +219,16 @@
       "findSite": "Byrsa Hill, Carthage",
       "model": "/models/fluted-column-fragment.glb",
       "modelFit": 2.1,
-      "position": [-3, 1.35, 1],
-      "rotation": [0, 0.15, 0],
+      "position": [
+        -3,
+        1.35,
+        1
+      ],
+      "rotation": [
+        0,
+        0.15,
+        0
+      ],
       "scale": 1,
       "placement": "ground",
       "placeholder": "column",
@@ -112,7 +240,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.2777716265770771,
+          -0.018611999228596743,
+          -0.24342710716212118
+        ],
+        "max": [
+          0.4450186239334919,
+          0.9122400283813474,
+          0.4343361203142435
+        ]
+      },
+      "modelLod": "/models/lod/fluted-column-fragment.glb"
     },
     {
       "id": "roman-togatus-statue-byrsa",
@@ -121,8 +267,16 @@
       "findSite": "Byrsa Hill, Carthage",
       "model": "/models/roman-togatus-statue.glb",
       "modelFit": 2.4,
-      "position": [-5.5, 1.6, -7.75],
-      "rotation": [0, -0.35, 0],
+      "position": [
+        -5.5,
+        1.6,
+        -7.75
+      ],
+      "rotation": [
+        0,
+        -0.35,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "statue",
@@ -134,7 +288,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.32573868367615993,
+          0.05561299994587893,
+          -0.20423531182064605
+        ],
+        "max": [
+          0.24516369435731228,
+          0.895762026309967,
+          0.22780030615582067
+        ]
+      },
+      "modelLod": "/models/lod/roman-togatus-statue.glb"
     },
     {
       "id": "roman-draped-statue-byrsa",
@@ -142,8 +314,16 @@
       "title": "Roman Draped Statue",
       "findSite": "Byrsa Hill, Carthage",
       "model": null,
-      "position": [-2.8, 1.6, -7.75],
-      "rotation": [0, 0.5, 0],
+      "position": [
+        -2.8,
+        1.6,
+        -7.75
+      ],
+      "rotation": [
+        0,
+        0.5,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "statue",
@@ -155,7 +335,12 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "draped-statue-byrsa",
@@ -164,8 +349,16 @@
       "findSite": "Byrsa Hill, Carthage",
       "model": "/models/draped-statue.glb",
       "modelFit": 2.3,
-      "position": [0, 1.6, -7.75],
-      "rotation": [0, -0.2, 0],
+      "position": [
+        0,
+        1.6,
+        -7.75
+      ],
+      "rotation": [
+        0,
+        -0.2,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "statue",
@@ -177,7 +370,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.3605899515474829,
+          -0.002159999916330091,
+          -0.338039800310011
+        ],
+        "max": [
+          0.5578619244421514,
+          1.5849570035934448,
+          0.2746327964304639
+        ]
+      },
+      "modelLod": "/models/lod/draped-statue.glb"
     },
     {
       "id": "headless-draped-statue-byrsa",
@@ -185,8 +396,16 @@
       "title": "Headless Draped Statue",
       "findSite": "Byrsa Hill, Carthage",
       "model": null,
-      "position": [2.8, 1.6, -7.75],
-      "rotation": [0, 0.25, 0],
+      "position": [
+        2.8,
+        1.6,
+        -7.75
+      ],
+      "rotation": [
+        0,
+        0.25,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "statue",
@@ -198,7 +417,12 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "reclining-figure-byrsa",
@@ -207,8 +431,16 @@
       "findSite": "Byrsa Hill, Carthage",
       "model": "/models/reclining-figure.glb",
       "modelFit": 2.2,
-      "position": [4.8, 0.85, -2.5],
-      "rotation": [0, -0.6, 0],
+      "position": [
+        4.8,
+        0.85,
+        -2.5
+      ],
+      "rotation": [
+        0,
+        -0.6,
+        0
+      ],
       "scale": 1,
       "placement": "ground",
       "placeholder": "fragment",
@@ -220,7 +452,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -1.7167276099788538,
+          -0.11039677031833295,
+          -2.297435998916626
+        ],
+        "max": [
+          1.6638065532314172,
+          0.9486467517216833,
+          3.2107670307159424
+        ]
+      },
+      "modelLod": "/models/lod/reclining-figure.glb"
     },
     {
       "id": "inscribed-architectural-fragment-byrsa",
@@ -229,8 +479,16 @@
       "findSite": "Byrsa Hill, Carthage",
       "model": "/models/inscribed-architectural-fragment.glb",
       "modelFit": 1.8,
-      "position": [7.15, 1.35, -0.8],
-      "rotation": [0, -1.5708, 0],
+      "position": [
+        7.15,
+        1.35,
+        -0.8
+      ],
+      "rotation": [
+        0,
+        -1.5708,
+        0
+      ],
       "scale": 0.9,
       "placement": "wall",
       "placeholder": "fragment",
@@ -242,7 +500,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.45614927944323325,
+          0.022027999162674006,
+          -0.5416146727361197
+        ],
+        "max": [
+          0.4285622828879049,
+          0.9342449903488159,
+          0.16325370092768599
+        ]
+      },
+      "modelLod": "/models/lod/inscribed-architectural-fragment.glb"
     },
     {
       "id": "roman-mosaic-villas",
@@ -251,8 +527,16 @@
       "findSite": "Roman Villas of Carthage",
       "model": "/models/roman-mosaic-bird-vine.glb",
       "modelFit": 3.6,
-      "position": [-2.8, 1.65, -8.22],
-      "rotation": [1.5708, 0, 0],
+      "position": [
+        -2.8,
+        1.65,
+        -8.22
+      ],
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
       "scale": 0.5,
       "placement": "wall",
       "placeholder": "mosaic",
@@ -264,7 +548,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -1.433195948600769,
+          -0.009565100449120288,
+          -0.5364761332556854
+        ],
+        "max": [
+          1.2757790088653564,
+          0.0271421013427727,
+          0.5522561649367462
+        ]
+      },
+      "modelLod": "/models/lod/roman-mosaic-bird-vine.glb"
     },
     {
       "id": "standing-draped-statue-villas",
@@ -272,8 +574,16 @@
       "title": "Standing Draped Statue",
       "findSite": "Roman Villas of Carthage",
       "model": null,
-      "position": [-7.15, 1.6, -5.2],
-      "rotation": [0, 1.5708, 0],
+      "position": [
+        -7.15,
+        1.6,
+        -5.2
+      ],
+      "rotation": [
+        0,
+        1.5708,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "statue",
@@ -285,7 +595,12 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "male-torso-villas",
@@ -294,8 +609,16 @@
       "findSite": "Roman Villas of Carthage",
       "model": "/models/male-torso-statue.glb",
       "modelFit": 2.1,
-      "position": [7.15, 1.6, -5.2],
-      "rotation": [0, -1.5708, 0],
+      "position": [
+        7.15,
+        1.6,
+        -5.2
+      ],
+      "rotation": [
+        0,
+        -1.5708,
+        0
+      ],
       "scale": 0.95,
       "placement": "wall",
       "placeholder": "statue",
@@ -307,7 +630,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.5158444980342045,
+          0.0292610004544257,
+          -0.24780174370483438
+        ],
+        "max": [
+          0.1044400057441597,
+          1.5526599884033203,
+          0.3810007500238804
+        ]
+      },
+      "modelLod": "/models/lod/male-torso-statue.glb"
     },
     {
       "id": "bust-fragment-villas",
@@ -315,8 +656,16 @@
       "title": "Bust Fragment",
       "findSite": "Roman Villas of Carthage",
       "model": null,
-      "position": [-7.15, 1.25, -2.2],
-      "rotation": [0, 1.5708, 0],
+      "position": [
+        -7.15,
+        1.25,
+        -2.2
+      ],
+      "rotation": [
+        0,
+        1.5708,
+        0
+      ],
       "scale": 0.8,
       "placement": "wall",
       "placeholder": "bust",
@@ -328,7 +677,12 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "decorated-bust-fragment-villas",
@@ -336,8 +690,16 @@
       "title": "Decorated Bust Fragment",
       "findSite": "Roman Villas of Carthage",
       "model": null,
-      "position": [7.15, 1.25, -2.2],
-      "rotation": [0, -1.5708, 0],
+      "position": [
+        7.15,
+        1.25,
+        -2.2
+      ],
+      "rotation": [
+        0,
+        -1.5708,
+        0
+      ],
       "scale": 0.8,
       "placement": "wall",
       "placeholder": "bust",
@@ -349,7 +711,12 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "statue-fragment-villas",
@@ -358,8 +725,16 @@
       "findSite": "Roman Villas of Carthage",
       "model": "/models/statue-fragment.glb",
       "modelFit": 1.9,
-      "position": [-5, 0.85, 5],
-      "rotation": [0.2, 0.5, 0],
+      "position": [
+        -5,
+        0.85,
+        5
+      ],
+      "rotation": [
+        0.2,
+        0.5,
+        0
+      ],
       "scale": 0.85,
       "placement": "ground",
       "placeholder": "fragment",
@@ -371,7 +746,25 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.3828662722888135,
+          -0.003640000009909161,
+          -0.10826390492169563
+        ],
+        "max": [
+          0.20781827862884034,
+          1.5571180582046509,
+          0.4366939167901725
+        ]
+      },
+      "modelLod": "/models/lod/statue-fragment.glb"
     },
     {
       "id": "bird-of-prey-villas",
@@ -379,8 +772,16 @@
       "title": "Bird of Prey Statue",
       "findSite": "Roman Villas of Carthage",
       "model": null,
-      "position": [5.6, 1.55, -8.22],
-      "rotation": [0, 0, 0],
+      "position": [
+        5.6,
+        1.55,
+        -8.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "bird",
@@ -392,49 +793,120 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "tanit-stela-tophet",
-      "zone": "temple",
+      "zone": "garden",
       "title": "Tanit Stela",
       "findSite": "Tophet of Salammbô, Carthage",
-      "model": null,
-      "position": [-7, 1.05, 38.15],
-      "rotation": [0, 0.12, 0],
-      "scale": 0.9,
+      "model": "/models/tanit-stela.glb",
+      "modelUrl": "https://sketchfab.com/3d-models/e7bfb3b0767248f5b4064ca8c57dc6e4",
+      "modelFit": 1.7,
+      "modelAnchor": "base",
+      "position": [
+        -17,
+        0.3,
+        6
+      ],
+      "rotation": [
+        0,
+        1.5707963267948966,
+        0
+      ],
+      "scale": 1,
       "placement": "ground",
       "placeholder": "stela",
-      "shortLabel": "A carved stone stela",
-      "description": "The Tanit XR archive identifies this scan as a Tanit stela from the Tophet of Salammbô. Further description is being verified.",
-      "context": "The find-site label comes from the archive entry.",
-      "threat": "The archive-specific threat statement is still being verified.",
-      "interpretation": "The row and enclosure are interpretive staging. Site-level archaeological interpretations will be presented as debated where sources disagree.",
-      "scannedBy": "Credit verification in progress",
-      "modelUrl": null,
-      "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "focusHeight": 0.85,
+      "shortLabel": "Tanit Stela",
+      "description": "A narrow stone stela from the Tophet of Salammbô. Tanit XR identifies its carved geometric sign as the symbol of Tanit.",
+      "context": "Displayed alongside another Tophet stela in the existing garden collection.",
+      "interpretation": "The garden is modern staging. The source discusses competing interpretations of the Tophet; this display does not resolve that debate.",
+      "threat": "No object-specific condition assessment is supplied by the source.",
+      "scannedBy": "Tanit XR",
+      "license": "CC BY-NC-SA 4.0 - Tanit XR. Geometry simplified and textures compressed for this experience.",
+      "sources": [
+        {
+          "label": "Original Tanit XR model",
+          "url": "https://sketchfab.com/3d-models/e7bfb3b0767248f5b4064ca8c57dc6e4"
+        },
+        {
+          "label": "CC BY-NC-SA 4.0",
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          0.15547558183774385,
+          0.043099999427795466,
+          -0.4797744692964945
+        ],
+        "max": [
+          0.43674442653551665,
+          1.0230400562286377,
+          -0.15065552874370464
+        ]
+      },
+      "modelLod": "/models/lod/tanit-stela.glb"
     },
     {
       "id": "punic-stela-tophet",
-      "zone": "temple",
+      "zone": "garden",
       "title": "Punic Stela",
       "findSite": "Tophet of Salammbô, Carthage",
-      "model": null,
-      "position": [-4.5, 1.05, 38.15],
-      "rotation": [0, -0.1, 0],
-      "scale": 0.9,
+      "model": "/models/punic-stela.glb",
+      "position": [
+        -17,
+        0.3,
+        14
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": 1,
       "placement": "ground",
       "placeholder": "stela",
       "shortLabel": "A Punic stone stela",
       "description": "The Tanit XR archive identifies this scan as a Punic stela from the Tophet of Salammbô. Further description is being verified.",
-      "context": "The find-site label comes from the archive entry.",
+      "context": "Displayed in the garden study collection with its original find-site recorded.",
       "threat": "The archive-specific threat statement is still being verified.",
-      "interpretation": "The row and enclosure are interpretive staging. Site-level archaeological interpretations will be presented as debated where sources disagree.",
-      "scannedBy": "Credit verification in progress",
-      "modelUrl": null,
-      "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "interpretation": "The garden display and pedestal are modern staging, not the original archaeological setting.",
+      "scannedBy": "Tanit XR",
+      "modelUrl": "https://sketchfab.com/3d-models/f9a80da509d8444cb691d183cf88a276",
+      "license": "CC BY-NC-SA 4.0 - Tanit XR. Geometry simplified and textures compressed for this experience.",
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/punic-stela-tophet-of-salammbo-carthage/"
+        },
+        {
+          "label": "CC BY-NC-SA 4.0",
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        }
+      ],
+      "modelFit": 2.1,
+      "modelAnchor": "base",
+      "focusHeight": 0.95,
+      "modelBounds": {
+        "min": [
+          -0.41543999314308167,
+          -0.001390568476708931,
+          -0.5007567798418837
+        ],
+        "max": [
+          1.1238499879837036,
+          1.4300405974803292,
+          0.9502167498392899
+        ]
+      },
+      "modelLod": "/models/lod/punic-stela.glb"
     },
     {
       "id": "punic-stelae-row-tophet",
@@ -442,8 +914,16 @@
       "title": "Punic Stelae Row",
       "findSite": "Tophet of Salammbô, Carthage",
       "model": null,
-      "position": [-2, 1.05, 38.15],
-      "rotation": [0, 0.08, 0],
+      "position": [
+        -2,
+        1.05,
+        38.15
+      ],
+      "rotation": [
+        0,
+        0.08,
+        0
+      ],
       "scale": 1.15,
       "placement": "ground",
       "placeholder": "stela-row",
@@ -455,7 +935,12 @@
       "scannedBy": "Credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/"
+        }
+      ]
     },
     {
       "id": "architectural-fragments-inscriptions",
@@ -464,8 +949,16 @@
       "findSite": "Water Temple, Zaghouan, Tunisia",
       "model": "/models/carved-laurel-block.glb",
       "modelFit": 2.3,
-      "position": [2.8, 1.55, -8.22],
-      "rotation": [0, 0, 0],
+      "position": [
+        2.8,
+        1.55,
+        -8.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 0.78,
       "placement": "wall",
       "placeholder": "fragments",
@@ -477,7 +970,25 @@
       "scannedBy": "Tanit XR volunteers",
       "modelUrl": "https://tanitxr.org/archive/carved-architectural-block-with-laurel-motifs/",
       "license": "CC BY-NC-SA 4.0",
-      "sources": [{ "label": "Tanit XR archive", "url": "https://tanitxr.org/archive/carved-architectural-block-with-laurel-motifs/" }]
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/carved-architectural-block-with-laurel-motifs/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.5298749804496765,
+          0.021999058672588,
+          -0.2678418076438641
+        ],
+        "max": [
+          0.6143100261688232,
+          0.57221492064615,
+          0.21323478881547217
+        ]
+      },
+      "modelLod": "/models/lod/carved-laurel-block.glb"
     },
     {
       "id": "wooden-door-zawiya",
@@ -486,8 +997,16 @@
       "findSite": "Mausoleum of Sidi Sahbi, Kairouan",
       "model": "/models/wooden-door-zawiya.glb",
       "modelFit": 2.6,
-      "position": [-11, 1.35, -24.5],
-      "rotation": [0, 1.5708, 0],
+      "position": [
+        -11,
+        1.35,
+        -24.5
+      ],
+      "rotation": [
+        0,
+        1.5708,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "fragment",
@@ -499,7 +1018,25 @@
       "scannedBy": "Tanit XR — individual credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR", "url": "https://tanitxr.org/" }]
+      "sources": [
+        {
+          "label": "Tanit XR",
+          "url": "https://tanitxr.org/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.42499496206686893,
+          -0.018170999363064766,
+          -0.14283409849842416
+        ],
+        "max": [
+          1.181861953586797,
+          2.3300530910491943,
+          0.15385610000332264
+        ]
+      },
+      "modelLod": "/models/lod/wooden-door-zawiya.glb"
     },
     {
       "id": "zitouna-calligraphic-panel",
@@ -508,8 +1045,16 @@
       "findSite": "Zitouna Mosque, Tunis",
       "model": "/models/zitouna-calligraphic-panel.glb",
       "modelFit": 1.8,
-      "position": [5.8, 2.25, -28.55],
-      "rotation": [0, 0, 0],
+      "position": [
+        5.8,
+        2.25,
+        -28.55
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "fragment",
@@ -521,7 +1066,25 @@
       "scannedBy": "Tanit XR — individual credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR", "url": "https://tanitxr.org/" }]
+      "sources": [
+        {
+          "label": "Tanit XR",
+          "url": "https://tanitxr.org/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.6047599911689758,
+          0.09279193237588068,
+          -0.1712776560468345
+        ],
+        "max": [
+          0.6409500241279602,
+          0.8529080872221265,
+          0.21151766070553377
+        ]
+      },
+      "modelLod": "/models/lod/zitouna-calligraphic-panel.glb"
     },
     {
       "id": "traditional-well-medina-tunis",
@@ -530,8 +1093,16 @@
       "findSite": "Medina of Tunis",
       "model": "/models/traditional-well.glb",
       "modelFit": 2.3,
-      "position": [-6.7, 1.15, -19.72],
-      "rotation": [0, 0, 0],
+      "position": [
+        -6.7,
+        1.15,
+        -19.72
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "fragment",
@@ -543,7 +1114,25 @@
       "scannedBy": "Tanit XR — individual credit verification in progress",
       "modelUrl": "https://sketchfab.com/3d-models/bir-traditional-well-medina-of-tunis-5c75cc8265f34fe39f203e23bdb09c04",
       "license": "CC BY-NC-SA — exact version verification in progress",
-      "sources": [{ "label": "Original Sketchfab record", "url": "https://sketchfab.com/3d-models/bir-traditional-well-medina-of-tunis-5c75cc8265f34fe39f203e23bdb09c04" }]
+      "sources": [
+        {
+          "label": "Original Sketchfab record",
+          "url": "https://sketchfab.com/3d-models/bir-traditional-well-medina-of-tunis-5c75cc8265f34fe39f203e23bdb09c04"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.500575962184973,
+          -0.005840000230818987,
+          -0.3338474816332027
+        ],
+        "max": [
+          0.7851089860192015,
+          2.000066041946411,
+          0.2725095039854215
+        ]
+      },
+      "modelLod": "/models/lod/traditional-well.glb"
     },
     {
       "id": "ornamental-mihrab-slimania",
@@ -552,8 +1141,16 @@
       "findSite": "Madrasa Slimania, Tunis",
       "model": "/models/ornamental-mihrab-slimania.glb",
       "modelFit": 2.8,
-      "position": [0, 1.4, -28.65],
-      "rotation": [0, 0, 0],
+      "position": [
+        0,
+        1.4,
+        -28.65
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "fragment",
@@ -565,7 +1162,25 @@
       "scannedBy": "Tanit XR — individual credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR", "url": "https://tanitxr.org/" }]
+      "sources": [
+        {
+          "label": "Tanit XR",
+          "url": "https://tanitxr.org/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -1.5434477238253017,
+          0.06299100071191766,
+          -0.6796994612825334
+        ],
+        "max": [
+          1.3525587229326625,
+          3.626260995864868,
+          0.7275785015237753
+        ]
+      },
+      "modelLod": "/models/lod/ornamental-mihrab-slimania.glb"
     },
     {
       "id": "zaghouan-stone-basin",
@@ -574,8 +1189,16 @@
       "findSite": "Water Temple, Zaghouan",
       "model": "/models/zaghouan-stone-basin.glb",
       "modelFit": 2.1,
-      "position": [5, 0.68, -24.5],
-      "rotation": [0, 0, 0],
+      "position": [
+        5,
+        0.68,
+        -24.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
       "scale": 1,
       "placement": "ground",
       "placeholder": "fragment",
@@ -587,7 +1210,25 @@
       "scannedBy": "Tanit XR — individual credit verification in progress",
       "modelUrl": "https://sketchfab.com/models/25ab1ce8609441b98c4200310bd7d499/embed",
       "license": "License verification in progress",
-      "sources": [{ "label": "Original Sketchfab record", "url": "https://sketchfab.com/models/25ab1ce8609441b98c4200310bd7d499/embed" }]
+      "sources": [
+        {
+          "label": "Original Sketchfab record",
+          "url": "https://sketchfab.com/models/25ab1ce8609441b98c4200310bd7d499/embed"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.4971818686751286,
+          0.050448822696776474,
+          -0.2029480040073393
+        ],
+        "max": [
+          0.6133228303221623,
+          0.6951151537698792,
+          0.930666983127594
+        ]
+      },
+      "modelLod": "/models/lod/zaghouan-stone-basin.glb"
     },
     {
       "id": "traditional-door-medina-tunis",
@@ -596,8 +1237,16 @@
       "findSite": "Medina of Tunis",
       "model": "/models/traditional-door-medina-tunis.glb",
       "modelFit": 2.7,
-      "position": [11, 1.35, -24.5],
-      "rotation": [0, -1.5708, 0],
+      "position": [
+        11,
+        1.35,
+        -24.5
+      ],
+      "rotation": [
+        0,
+        -1.5708,
+        0
+      ],
       "scale": 1,
       "placement": "wall",
       "placeholder": "fragment",
@@ -609,7 +1258,187 @@
       "scannedBy": "Tanit XR — individual credit verification in progress",
       "modelUrl": null,
       "license": "License verification in progress",
-      "sources": [{ "label": "Tanit XR", "url": "https://tanitxr.org/" }]
+      "sources": [
+        {
+          "label": "Tanit XR",
+          "url": "https://tanitxr.org/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.8954656377557971,
+          -0.14402399957180023,
+          -0.13004749355016343
+        ],
+        "max": [
+          0.7857866540674426,
+          2.3625550270080566,
+          0.1560514950483858
+        ]
+      },
+      "modelLod": "/models/lod/traditional-door-medina-tunis.glb"
+    },
+    {
+      "id": "traditional-loom-tunis",
+      "zone": "garden",
+      "title": "Traditional Loom with Woven Carpet",
+      "findSite": "Medina of Tunis, Tunisia",
+      "model": "/models/traditional-loom.glb",
+      "modelFit": 3.2,
+      "modelAnchor": "base",
+      "position": [
+        20.4,
+        0.14,
+        12
+      ],
+      "rotation": [
+        0,
+        -1.57079632679,
+        0
+      ],
+      "scale": 1,
+      "placement": "ground",
+      "placeholder": "fragment",
+      "shortLabel": "A loom and a partially woven carpet",
+      "description": "Tanit XR identifies this scan as a traditional loom with a partially woven carpet in the Medina of Tunis. The visible textile carries repeating green and beige diamond motifs.",
+      "context": "A craft display connecting the architectural collection with Tunisian textile-making.",
+      "threat": "No object-specific condition assessment is supplied by the source.",
+      "interpretation": "The shelter and placement are modern exhibition staging. The scan description identifies Tunis; the source map pin near zero latitude and longitude is not used as location evidence.",
+      "scannedBy": "Tanit XR",
+      "modelUrl": "https://sketchfab.com/3d-models/6740b21cadc84f3587e35944a7fe70be",
+      "license": "CC BY-NC-SA 4.0 - Tanit XR. Geometry simplified and textures compressed for this experience.",
+      "sources": [
+        {
+          "label": "Tanit XR archive",
+          "url": "https://tanitxr.org/archive/traditional-loom-with-woven-carpet-medina-of-tunis/"
+        },
+        {
+          "label": "CC BY-NC-SA 4.0",
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        }
+      ],
+      "focusHeight": 1.6,
+      "modelBounds": {
+        "min": [
+          -0.7052299585795954,
+          -0.004949999973177799,
+          -0.3878824827524887
+        ],
+        "max": [
+          0.7231899705386713,
+          1.9906599521636963,
+          0.48650248025386233
+        ]
+      },
+      "modelLod": "/models/lod/traditional-loom.glb"
+    },
+    {
+      "id": "sidi-sahbi-tilework",
+      "zone": "tunisia-details",
+      "title": "Tilework Wall Panel",
+      "findSite": "Mausoleum of Sidi Sahbi, Kairouan",
+      "model": "/models/sidi-sahbi-tilework.glb",
+      "modelUrl": "https://sketchfab.com/3d-models/af6858454d664099a006ff39cb8bd08b",
+      "modelFit": 3.2,
+      "modelAnchor": "base",
+      "position": [
+        -5.8,
+        0.25,
+        -28.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": 1,
+      "placement": "ground",
+      "placeholder": "fragment",
+      "focusHeight": 1.35,
+      "shortLabel": "Tilework Wall Panel",
+      "description": "A scanned wall panel from Sidi Sahbi in Kairouan, combining a vase and plant motif in coloured ceramic tiles with a carved stucco surround.",
+      "context": "Adds an original decorative surface to the existing study court.",
+      "interpretation": "The panel comes from Kairouan, not this courtyard. Its setting and scale are interpretive. The source description is used for location; its near-zero map pin is not.",
+      "threat": "No object-specific condition assessment is supplied by the source.",
+      "scannedBy": "Tanit XR",
+      "license": "CC BY-NC-SA 4.0 - Tanit XR. Geometry simplified and textures compressed for this experience.",
+      "sources": [
+        {
+          "label": "Original Tanit XR model",
+          "url": "https://sketchfab.com/3d-models/af6858454d664099a006ff39cb8bd08b"
+        },
+        {
+          "label": "CC BY-NC-SA 4.0",
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.6468600034713745,
+          0.5178383861147395,
+          -0.7993724356286709
+        ],
+        "max": [
+          2.565310001373291,
+          3.1967217053807744,
+          0.035162408917446764
+        ]
+      },
+      "modelLod": "/models/lod/sidi-sahbi-tilework.glb"
+    },
+    {
+      "id": "zaghouan-relief-fragment",
+      "zone": "temple",
+      "title": "Architectural Relief Fragment",
+      "findSite": "Water Temple, Zaghouan",
+      "model": "/models/zaghouan-relief.glb",
+      "modelUrl": "https://sketchfab.com/3d-models/f263eb8d630c458f9c747380e803fd33",
+      "modelFit": 1.6,
+      "modelAnchor": "base",
+      "position": [
+        -4.8,
+        0.58,
+        -2.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": 1,
+      "placement": "ground",
+      "placeholder": "fragment",
+      "focusHeight": 0.5,
+      "shortLabel": "Architectural Relief Fragment",
+      "description": "A broken architectural block from the Water Temple at Zaghouan, preserving geometric relief and traces of plant ornament.",
+      "context": "A comparative architectural exhibit inside the existing Roman precinct.",
+      "interpretation": "This fragment is from Zaghouan, not Carthage. Its display here does not imply it belonged to this temple. The source description is used for location; its near-zero map pin is not.",
+      "threat": "No object-specific condition assessment is supplied by the source.",
+      "scannedBy": "Tanit XR",
+      "license": "CC BY-NC-SA 4.0 - Tanit XR. Geometry simplified and textures compressed for this experience.",
+      "sources": [
+        {
+          "label": "Original Tanit XR model",
+          "url": "https://sketchfab.com/3d-models/f263eb8d630c458f9c747380e803fd33"
+        },
+        {
+          "label": "CC BY-NC-SA 4.0",
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+        }
+      ],
+      "modelBounds": {
+        "min": [
+          -0.5859699845314026,
+          0.5435019593815358,
+          -0.41420697599693074
+        ],
+        "max": [
+          0.16985000669956207,
+          0.9674180883784739,
+          0.31245695978446764
+        ]
+      },
+      "modelLod": "/models/lod/zaghouan-relief.glb"
     }
   ]
 }

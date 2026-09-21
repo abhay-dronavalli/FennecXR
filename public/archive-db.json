@@ -41,11 +41,12 @@
       "material": "Carved stone",
       "period": "Roman era (post-Punic Wars)",
       "findSite": "Byrsa Hill, Carthage, Tunisia",
-      "description": "A carved stone base that once supported a column in Roman Carthage. Features a circular top with layered moldings characteristic of Roman forums and temples. Shows weathering and cracks from long exposure but demonstrates the precision of Roman stonework and the monumental ambition of the city's reconstruction.",
+      "description": "A carved stone column base from Byrsa Hill, Carthage, with a circular upper surface and layered mouldings.",
       "significance": "Evidence of monumental Roman structures at Byrsa Hill. Reveals the scale and grandeur of the city's reconstruction after the Punic Wars.",
       "archiveUrl": "https://tanitxr.org/archive/roman-column-base-byrsa-hill-carthage/",
-      "scannedBy": "Tanit XR volunteers",
-      "format": "3D model (glTF binary)"
+      "scannedBy": "Tanit XR",
+      "format": "3D model (glTF binary)",
+      "scanMethod": "Photogrammetry; uploaded with Scaniverse"
     },
     {
       "id": "fluted-column-fragment-byrsa",
@@ -243,14 +244,15 @@
     {
       "id": "tanit-stela-tophet",
       "title": "Tanit Stela",
-      "what": "A funerary stone monument from the Tophet of Salammbô featuring the carved symbol of Tanit — the principal Carthaginian goddess — depicted as a triangle, horizontal arms, and a circular head. Originally marked a burial urn.",
-      "material": "Stone",
-      "period": "Punic era (8th–2nd century BCE)",
-      "findSite": "Tophet of Salammbô, Carthage, Tunisia",
-      "description": "A funerary stone monument featuring the carved symbol of Tanit, the principal Carthaginian goddess, depicted as a triangle (body), horizontal arms, and a circular head. The stela originally marked a burial urn containing cremated remains of an infant or small animal. The Tophet is a contested site — scholarly debate continues between a ritual child sacrifice interpretation and a natural burial cemetery with religious cremation rites.",
-      "significance": "A powerful symbol of Punic spirituality and the complexity of ancient Mediterranean cultures. The ongoing scholarly debate about the site's function reflects how much about Carthage remains genuinely uncertain.",
-      "archiveUrl": "https://tanitxr.org/archive/tanit-stela-tophet-of-salammbo-carthage/",
-      "scannedBy": "Tanit XR volunteers",
+      "what": "A narrow stone stela from the Tophet of Salammbô. Tanit XR identifies its carved geometric sign as the symbol of Tanit.",
+      "description": "A narrow stone stela from the Tophet of Salammbô. Tanit XR identifies its carved geometric sign as the symbol of Tanit.",
+      "material": "Carved stone",
+      "period": "Punic period; individual date unrecorded",
+      "findSite": "Tophet of Salammbô, Carthage",
+      "significance": "Displayed alongside another Tophet stela in the existing garden collection.",
+      "archiveUrl": "https://sketchfab.com/3d-models/e7bfb3b0767248f5b4064ca8c57dc6e4",
+      "scannedBy": "Tanit XR",
+      "scanMethod": "Photogrammetry; uploaded with Scaniverse",
       "format": "3D model (glTF binary)"
     },
     {
@@ -260,11 +262,11 @@
       "material": "Limestone",
       "period": "Punic period",
       "findSite": "Tophet of Salammbô, Carthage, Tunisia",
-      "description": "A Punic stela from the Tophet of Salammbo, a sacred precinct in Carthage dedicated to deities Tanit and Baal Hammon. The stela originally displayed religious symbols including the sign of Tanit, crescent moons, or inscriptions. Over centuries many became fragmented or eroded. Scanned using Scaniverse and Gaussian splat techniques.",
+      "description": "A scanned limestone Punic stela from the Tophet of Salammbo in Carthage, identified by Tanit XR.",
       "significance": "Serves as a powerful witness of Carthage's religious and cultural life. Demonstrates Carthaginian ritual practices and religious devotion. The Tophet remains one of the most debated archaeological sites in the ancient world.",
       "archiveUrl": "https://tanitxr.org/archive/punic-stela-tophet-of-salammbo-carthage/",
-      "scannedBy": "Tanit XR volunteers",
-      "scanMethod": "Photogrammetry using Scaniverse and Gaussian splats",
+      "scannedBy": "Tanit XR",
+      "scanMethod": "Photogrammetry; uploaded with Scaniverse",
       "format": "3D model (glTF binary)"
     },
     {
@@ -375,6 +377,48 @@
       "archiveUrl": "https://tanitxr.org/archive/traditional-door-medina-of-tunis/",
       "scannedBy": "Tanit XR volunteers",
       "optimizationCredit": "Eunjeong Yu (game-ready)",
+      "format": "3D model (glTF binary)"
+    },
+    {
+      "id": "traditional-loom-tunis",
+      "title": "Traditional Loom with Woven Carpet",
+      "what": "A traditional loom carrying a partially woven textile.",
+      "material": "Wood and woven textile",
+      "period": "Traditional craft; exact date unrecorded",
+      "findSite": "Medina of Tunis, Tunisia",
+      "description": "Tanit XR identifies this scan as a traditional loom with a partially woven carpet in the Medina of Tunis. The visible textile carries repeating green and beige diamond motifs.",
+      "significance": "Documents textile-making as part of Tunisia’s craft heritage.",
+      "archiveUrl": "https://tanitxr.org/archive/traditional-loom-with-woven-carpet-medina-of-tunis/",
+      "scannedBy": "Tanit XR",
+      "scanMethod": "Photogrammetry; uploaded with Scaniverse",
+      "format": "3D model (glTF binary)"
+    },
+    {
+      "id": "sidi-sahbi-tilework",
+      "title": "Tilework Wall Panel",
+      "what": "A scanned wall panel from Sidi Sahbi in Kairouan, combining a vase and plant motif in coloured ceramic tiles with a carved stucco surround.",
+      "description": "A scanned wall panel from Sidi Sahbi in Kairouan, combining a vase and plant motif in coloured ceramic tiles with a carved stucco surround.",
+      "material": "Ceramic tiles and carved stucco",
+      "period": "Ottoman-era decoration (source attribution)",
+      "findSite": "Mausoleum of Sidi Sahbi, Kairouan",
+      "significance": "Adds an original decorative surface to the existing study court.",
+      "archiveUrl": "https://sketchfab.com/3d-models/af6858454d664099a006ff39cb8bd08b",
+      "scannedBy": "Tanit XR",
+      "scanMethod": "Photogrammetry; uploaded with Scaniverse",
+      "format": "3D model (glTF binary)"
+    },
+    {
+      "id": "zaghouan-relief-fragment",
+      "title": "Architectural Relief Fragment",
+      "what": "A broken architectural block from the Water Temple at Zaghouan, preserving geometric relief and traces of plant ornament.",
+      "description": "A broken architectural block from the Water Temple at Zaghouan, preserving geometric relief and traces of plant ornament.",
+      "material": "Carved stone",
+      "period": "Roman; Water Temple dated to the 2nd century CE",
+      "findSite": "Water Temple, Zaghouan",
+      "significance": "A comparative architectural exhibit inside the existing Roman precinct.",
+      "archiveUrl": "https://sketchfab.com/3d-models/f263eb8d630c458f9c747380e803fd33",
+      "scannedBy": "Tanit XR",
+      "scanMethod": "Photogrammetry; uploaded with Scaniverse",
       "format": "3D model (glTF binary)"
     }
   ]
